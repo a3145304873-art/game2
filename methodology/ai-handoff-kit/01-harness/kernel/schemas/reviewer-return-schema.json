@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://spec-workflow/reviewer-return.schema.json",
+  "title": "Reviewer Return JSON (spec-workflow v1.2.0)",
+  "description": "Contract that EVERY reviewer agent (spec/plan/tasks/consistency/code + qa-tester) returns to the orchestrator. Reviewers are read-only: they NEVER write marker files (M2). The orchestrator validates this JSON for self-consistency before writing the .xxx-passed marker.",
+  "type": "object",
+  "required": [
+    "reviewType",
+    "conclusion",
+    "roundNumber",
+    "reportFile",
+    "criticalCount",
+    "warningCount",
+    "findings",
+    "reviewerSelfReport"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "reviewType": {
+      "type": "string",
+      "enum": ["spec", "plan", "tasks", "consistency", "code", "qa"]
+    },
+    "conclusion": {
+      "type": "string",
+      "enum": ["PASS", "FAIL"]
+    },
+    "roundNumber": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reportFile": {
+      "type": "string",
+      "description": "Project-relative path to the markdown report the reviewer wrote to reviews/."
+    },
+    "criticalCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "warningCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "location", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "severity": { "type": "string", "enum": ["CRITICAL", "WARNING", "INFO"] },
+          "location": { "type": "string" },
+          "description": { "type": "string" },
+          "suggestedFix": { "type": "string" }
+        }
+      }
+    },
+    "reviewerSelfReport": {
+      "type": "object",
+      "description": "Replaces the meaningless self-attesting reviewerAgent:true field (M4). Provenance metadata only — NOT a pass attestation.",
+      "required": ["model"],
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string" },
+        "adversarialJustification": {
+          "type": "string",
+          "description": "Required when criticalCount=0 and warningCount=0: why no issues were found."
+        }
+      }
+    }
+  }
+}

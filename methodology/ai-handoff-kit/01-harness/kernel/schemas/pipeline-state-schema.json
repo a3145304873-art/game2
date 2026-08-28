@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://spec-workflow/pipeline-state.schema.json",
+  "title": "Pipeline State (spec-workflow v1.3.0)",
+  "description": "Single source of truth for a kickoff planning run (Phase 1-5). Lives at specs/{N}-{slug}/.pipeline-state.json. The orchestrator reads/writes it at every Phase boundary; the stop-round-gate hook reads it on session Stop.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "specDir",
+    "currentPhase",
+    "currentSubStep",
+    "phaseStatus",
+    "roundsPerPhase",
+    "humanAckGates",
+    "lastTimestamp"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["1.2.0", "1.3.0"]
+    },
+    "specDir": {
+      "type": "string",
+      "description": "Project-relative path to the spec directory, e.g. specs/003-user-auth/",
+      "pattern": "^.+/$"
+    },
+    "currentPhase": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9,
+      "description": "1=SPEC 2=PLAN 3=TASKS 4=Consistency 5=Readiness 6=Implement 7=CodeReview 8=QA 9=MergeReady. v1.3.0 kickoff drives only phases 1-5; 6-9 appear only in v1.2.0-legacy state and are driven by standalone commands."
+    },
+    "currentSubStep": {
+      "type": "string",
+      "description": "Fine-grained step within the current phase, e.g. review-fix-loop, awaiting-planning-batch-review"
+    },
+    "phaseStatus": {
+      "type": "object",
+      "description": "Per-phase tracking. Keys are '{N}-{slug}' strings.",
+      "required": [
+        "1-spec",
+        "2-plan",
+        "3-tasks",
+        "4-consistency",
+        "5-readiness",
+        "6-implement",
+        "7-review",
+        "8-qa",
+        "9-merge"
+      ],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["status"],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in-progress", "completed", "escalated"]
+          },
+          "rounds": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of review/fix rounds consumed in this phase."
+          },
+          "marker": {
+            "type": ["string", "null"],
+            "description": "Marker filename written by the orchestrator on completion, or null."
+          },
+          "lastReport": {
+            "type": ["string", "null"],
+            "description": "Path to the most recent reviewer report for this phase."
+          }
+        }
+      }
+    },
+    "roundsPerPhase": {
+      "type": "object",
+      "description": "Hard upper bound on review rounds per phase (decision D3). The ONLY place these limits are defined (M1 unification).",
+      "required": ["spec", "plan", "tasks", "consistency", "readiness", "review", "qa"],
+      "additionalProperties": false,
+      "properties": {
+        "spec": { "type": "integer", "const": 5 },
+        "plan": { "type": "integer", "const": 5 },
+        "tasks": { "type": "integer", "const": 5 },
+        "consistency": { "type": "integer", "const": 2 },
+        "readiness": { "type": "integer", "const": 2 },
+        "review": { "type": "integer", "const": 3 },
+        "qa": { "type": "integer", "const": 2 }
+      }
+    },
+    "humanAckGates": {
+      "type": "array",
+      "description": "Record of human-acknowledgement gates that have been passed. The single mandatory human touchpoint: the planning batch review after Phase 5 readiness (requirement alignment is implicit at kickoff start).",
+      "items": {
+        "type": "object",
+        "required": ["phase", "gate", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "phase": { "type": "integer", "minimum": 1, "maximum": 9 },
+          "gate": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "passed"] }
+        }
+      }
+    },
+    "lastTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sessionHints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resumeHint": {
+          "type": "string",
+          "description": "Human-readable one-liner shown on cross-session resume. Also carries redo context (e.g. 'Redo in progress: <explanation>') so a crash mid-redo is not lost."
+        },
+        "escalatedToHuman": {
+          "type": "boolean",
+          "description": "True once any phase hit its round ceiling and escalated."
+        }
+      }
+    }
+  }
+}

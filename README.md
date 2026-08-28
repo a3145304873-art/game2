@@ -7,6 +7,9 @@
 - `methodology/` — 游戏开发方法论与技能包
   - `gamedesignbase/` — 游戏设计基础技能集（含资源转化、玩家动机、射击核心、导航控制等子技能）
   - `game-design-simulator/` — 游戏设计模拟器（含数据分析、边界用例、实体模式等参考）
+  - `game-system-designer/` — 游戏系统设计技能（含 GDD/SDD 模板与评估用例）
+  - `gamenewsflash/` — 游戏行业资讯日报生成技能
+  - `ai-handoff-kit/` — AI 协作开发交接工具包（评审 agent、协作流程）
   - `visual-flow-to-ui-complete-toolkit-v1/` — 可视化流程到 UI 的完整工具包
   - `review/` — 评审技能
 - `references/` — 外部开源项目参考库（索引见 [references/README.md](references/README.md)）
