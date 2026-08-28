@@ -1,0 +1,204 @@
+{
+  "$schema": "../schemas/install-modules.schema.json",
+  "version": 1,
+  "description": "File-level module map for selective installation of the scaffold.",
+  "modules": {
+    "rules-core": {
+      "includes": [
+        "rules/common/**",
+        "rules/unity/**",
+        "rules/unreal/**",
+        "rules/godot/**",
+        "rules/web/**"
+      ],
+      "notes": "Installs the full rules layer, including engine-specific overrides. Consumers should still activate only one engine profile at runtime unless doing comparison work."
+    },
+    "agents-core": {
+      "includes": [
+        "agents/*.md"
+      ],
+      "notes": "Installs the complete flat agent layer."
+    },
+    "commands-core": {
+      "includes": [
+        "commands/*.md"
+      ],
+      "notes": "Installs the complete flat command layer."
+    },
+    "skills-core": {
+      "includes": [
+        "skills/**/README.md",
+        "skills/**/SKILL.md"
+      ],
+      "notes": "Installs all skills, including engine-specific skill packs."
+    },
+    "docs-core": {
+      "includes": [
+        "docs/templates/**",
+        "docs/orchestration/**"
+      ],
+      "notes": "Installs reusable templates and orchestration guides."
+    },
+    "contexts-core": {
+      "includes": [
+        "contexts/*.md"
+      ],
+      "notes": "Installs lifecycle and execution contexts."
+    },
+    "engine-unity": {
+      "includes": [
+        "rules/unity/**",
+        "skills/unity/**",
+        "agents/unity-*.md",
+        "commands/unity-*.md"
+      ],
+      "notes": "Unity engine surface. Use with baseline components and avoid mixing with other engine packs in active production profiles."
+    },
+    "engine-unreal": {
+      "includes": [
+        "rules/unreal/**",
+        "skills/unreal/**",
+        "agents/unreal-*.md",
+        "commands/unreal-*.md"
+      ],
+      "notes": "Unreal engine surface. Use with baseline components and avoid mixing with other engine packs in active production profiles."
+    },
+    "engine-godot": {
+      "includes": [
+        "rules/godot/**",
+        "skills/godot/**",
+        "agents/godot-*.md",
+        "commands/godot-*.md"
+      ],
+      "notes": "Godot engine surface. Use with baseline components and avoid mixing with other engine packs in active production profiles."
+    },
+    "engine-web": {
+      "includes": [
+        "rules/web/**",
+        "skills/web/**",
+        "agents/web-*.md",
+        "commands/web-*.md"
+      ],
+      "notes": "Web (HTML5) engine surface. Use with baseline components and avoid mixing with other engine packs in active production profiles."
+    },
+    "domain-workflow": {
+      "includes": [
+        "skills/workflow/**",
+        "agents/planner.md",
+        "agents/producer.md",
+        "agents/doc-updater.md",
+        "commands/plan.md",
+        "commands/tdd.md",
+        "commands/verify.md",
+        "commands/orchestrate.md",
+        "commands/learn.md",
+        "commands/evolve.md"
+      ],
+      "notes": "Workflow, planning, verification, and continuous-improvement layer."
+    },
+    "domain-design": {
+      "includes": [
+        "skills/design/**",
+        "agents/gdd-designer.md",
+        "agents/systems-designer.md",
+        "agents/combat-designer.md",
+        "agents/level-designer.md",
+        "agents/narrative-designer.md",
+        "agents/ui-ux-designer.md",
+        "agents/economy-designer.md",
+        "commands/gdd.md",
+        "commands/combat-design.md",
+        "commands/economy-balance.md",
+        "commands/level-beat.md",
+        "commands/quest-design.md",
+        "commands/onboarding.md"
+      ],
+      "notes": "Player-facing design layer."
+    },
+    "domain-engineering-common": {
+      "includes": [
+        "skills/engineering-common/**",
+        "agents/architect.md",
+        "agents/technical-design-lead.md",
+        "agents/gameplay-programmer.md",
+        "agents/ai-programmer.md",
+        "agents/physics-programmer.md",
+        "agents/animation-programmer.md",
+        "agents/ui-programmer.md",
+        "agents/network-programmer.md",
+        "agents/tools-programmer.md",
+        "agents/build-engineer.md",
+        "commands/tech-design.md",
+        "commands/save-system-review.md",
+        "commands/telemetry-plan.md",
+        "commands/tools-pass.md"
+      ],
+      "notes": "Engine-neutral engineering architecture and implementation layer."
+    },
+    "domain-art-audio-content": {
+      "includes": [
+        "skills/art-audio-content/**",
+        "agents/technical-artist.md",
+        "agents/audio-designer.md",
+        "docs/templates/art-bible.md",
+        "docs/templates/audio-bible.md",
+        "commands/audio-pass.md",
+        "commands/generate-assets.md",
+        "manifests/asset-providers.json",
+        "scripts/generate-assets.js"
+      ],
+      "notes": "Content pipeline and presentation layer, including AI asset generation via the provider registry."
+    },
+    "domain-qa-release": {
+      "includes": [
+        "skills/qa-release/**",
+        "agents/qa-lead.md",
+        "agents/playtest-analyst.md",
+        "agents/performance-reviewer.md",
+        "agents/accessibility-reviewer.md",
+        "agents/release-manager.md",
+        "agents/console-compliance-reviewer.md",
+        "commands/qa-plan.md",
+        "commands/playtest-report.md",
+        "commands/perf-budget.md",
+        "commands/memory-budget.md",
+        "commands/release-check.md",
+        "commands/cert-check.md",
+        "commands/bug-triage.md"
+      ],
+      "notes": "Quality, performance, release, and compliance layer."
+    },
+    "capability-multiplayer": {
+      "includes": [
+        "agents/network-programmer.md",
+        "commands/multiplayer-review.md",
+        "skills/engineering-common/multiplayer-netcode-patterns/**",
+        "rules/common/technical-design.md"
+      ],
+      "notes": "Additional online-play and sync coverage."
+    },
+    "capability-liveops": {
+      "includes": [
+        "agents/liveops-manager.md",
+        "agents/telemetry-analyst.md",
+        "commands/liveops-brief.md",
+        "commands/patch-notes.md",
+        "skills/design/liveops-design/**",
+        "skills/engineering-common/telemetry-instrumentation/**",
+        "docs/templates/telemetry-plan.md"
+      ],
+      "notes": "Post-launch operations and telemetry support."
+    },
+    "capability-mobile-f2p": {
+      "includes": [
+        "agents/mobile-f2p-analyst.md",
+        "agents/economy-designer.md",
+        "commands/economy-balance.md",
+        "skills/design/monetization-design/**",
+        "skills/design/economy-balancing/**",
+        "skills/design/liveops-design/**"
+      ],
+      "notes": "Mobile economy, retention, and F2P tuning support."
+    }
+  }
+}

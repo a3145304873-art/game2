@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2rem;
+            color: #4caf50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .scoreboard {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .scoreboard span {
+            color: #ccc;
+        }
+
+        .scoreboard strong {
+            color: #ff9800;
+        }
+
+        canvas {
+            border: 3px solid #4caf50;
+            border-radius: 8px;
+            background-color: #1a1a1a;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 30px 50px;
+            border-radius: 12px;
+            border: 2px solid #f44336;
+            display: none;
+        }
+
+        .game-over h2 {
+            color: #f44336;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .game-over p {
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .game-over button {
+            padding: 12px 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            margin: 0 5px;
+        }
+
+        .game-over button:hover {
+            background-color: #45a049;
+        }
+
+        .game-over button.secondary {
+            background-color: #555;
+        }
+
+        .game-over button.secondary:hover {
+            background-color: #666;
+        }
+
+        .instructions {
+            margin-top: 15px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .top-bar {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #4caf50;
+        }
+
+        .container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="index.html" class="back-link">← Voltar ao Hub</a>
+        <h1>🐍 Snake</h1>
+        <span></span>
+    </div>
+
+    <div class="scoreboard">
+        <span>Pontuação: <strong id="score">0</strong></span>
+        <span>Recorde: <strong id="highscore">0</strong></span>
+    </div>
+
+    <div class="container">
+        <canvas id="game" width="400" height="400"></canvas>
+
+        <div class="game-over" id="gameOverScreen">
+            <h2>Game Over!</h2>
+            <p>Sua pontuação: <span id="finalScore">0</span></p>
+            <button onclick="restartGame()">Jogar Novamente</button>
+            <button class="secondary" onclick="window.location.href='index.html'">Menu</button>
+        </div>
+    </div>
+
+    <div class="instructions">
+        Use as <strong>setas do teclado</strong> ou <strong>WASD</strong> para mover
+    </div>
+
+    <script src="snake.js"></script>
+</body>
+</html>

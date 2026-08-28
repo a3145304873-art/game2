@@ -1,0 +1,183 @@
+<div align="center">
+
+# Everything Game Dev Code
+
+### A universal scaffold for AI-assisted game development.
+### Multi-engine. Multi-harness. One coordinated workflow.
+
+<br>
+
+![license](https://img.shields.io/badge/license-MIT-blue)
+![agents](https://img.shields.io/badge/agents-42-blueviolet)
+![commands](https://img.shields.io/badge/commands-66-orange)
+![skills](https://img.shields.io/badge/skills-107-brightgreen)
+![rules](https://img.shields.io/badge/rules-115-yellow)
+![contexts](https://img.shields.io/badge/contexts-9-cyan)
+![harnesses](https://img.shields.io/badge/harnesses-5-red)
+![engines](https://img.shields.io/badge/engines-Unity%20%7C%20Unreal%20%7C%20Godot%20%7C%20HTML-8A2BE2)
+
+**Unity** · **Unreal Engine** · **Godot** · **HTML/JS** — 2D and 3D, strict engine isolation, shared standards.
+
+</div>
+
+---
+
+Not just a prompt collection — a structured operating system for game projects that combines:
+- **Rules** for policy and standards
+- **Agents** for role specialization
+- **Commands** for repeatable entry points
+- **Skills** for reusable execution patterns
+- **Contexts** for phase-specific behavior
+- **Hooks** for workflow automation
+- **Harness adapters** for Claude, Codex, Cursor, OpenCode, Kiro, Grok Build, and Kilo (see [docs/harness-support.md](docs/harness-support.md) for what each one supports)
+
+## Quickstart
+
+```bash
+git clone https://github.com/MRCalderon3D/everything-game-dev-code.git
+cd everything-game-dev-code
+npm run setup:hooks
+```
+
+`npm run setup:hooks` wires the repo's pre-commit checks (structure sync + validation) so committed artifacts never drift; it needs Node.js 18+ and takes one second. Run `npm run doctor` at any time to diagnose your installation (environment, hooks, active engine profile, generated-artifact drift) with remediation hints.
+
+Open the folder in your AI coding assistant (Claude Code, Cursor, Codex, OpenCode, Kiro, Grok Build, or Kilo). The scaffold is loaded from the assistant's adapter plus the shared `AGENTS.md`, `rules/`, `commands/`, `agents/`, and `skills/` layers.
+
+Then type commands in the chat:
+
+| Command | What it does |
+|---------|-------------|
+| `/plan` | Outline your project before coding |
+| `/gdd` | Generate a Game Design Document |
+| `/tdd` | Apply test-driven development to the current task |
+| `/scene-bootstrap` | Scaffold a new scene |
+| `/unity-setup` | Bootstrap a Unity project with conventions |
+| `/unity-build-fix` | Diagnose and fix Unity build errors |
+| `/godot-setup` | Bootstrap a Godot project |
+| `/unreal-setup` | Bootstrap an Unreal project |
+| `/web-setup` | Bootstrap a web (HTML5) project, 2D canvas or 3D WebGL |
+| `/generate-assets` | Generate real assets — images, skyboxes, 3D models, SFX, music, voice, video — from text prompts |
+| `/full-game` | Orchestrate an entire game from scratch (experimental) |
+
+You don't have to follow a specific order. Pick whatever command fits your current need — start a new project, generate a GDD for an existing one, run a QA review, or fix a build error.
+
+### Step-by-step guide
+
+The `guides/Dash & Collect/` folder contains a full tutorial that walks through building a game using the scaffold's commands, agents, skills, and contexts across all project phases.
+
+### Example projects
+
+The `samples/` folder contains thirteen complete HTML games built with the `/full-game` command in a single pass each (PirateInvaders, Tetris2DMutation, LosRenacidos, pacmanAI, harness-comparison variants, PrismDefense3D — the first 3D sample, built on Three.js against the web 3D rules, plus its CC0-textured Visuals variant and its AssetsGen variant where every model, texture, skybox, sound, and the intro cinematic were generated through the `/generate-assets` layer, and NebulaLance — a 2.5D R-Type-style shoot-'em-up whose ship, enemies, boss, nebula, audio, and image-to-video menu cinematic are all AI-generated), plus a writeup comparing how different AI harnesses performed on the same brief. For real projects, we recommend going step by step.
+
+## Goals
+- Keep shared game-development standards engine-neutral.
+- Let Unity, Unreal, Godot, and the web layer each extend the base cleanly without contaminating one another.
+- Support real production work across design, engineering, content, QA, release, and live ops.
+- Turn repeated solutions into reusable skills and structured workflows.
+- Make the repository portable across multiple coding assistants and harnesses.
+
+## Repository Model
+This scaffold is organized in layers:
+
+- `rules/` — what good looks like
+- `agents/` — who does the work
+- `commands/` — how work starts
+- `skills/` — how work is executed well
+- `contexts/` — how priorities shift by phase
+- `hooks/` — how workflow safeguards are enforced
+- `manifests/` — how subsets are installed by profile, plus the engine layer registry (`engines.json`), the harness adapter registry (`harnesses.json`), and the generative asset provider registry (`asset-providers.json`)
+- `schemas/` — JSON validation for manifests, hooks, and plugins
+- `scripts/` — generators, validators, and diagnostics (`new:engine`, `doctor`, `sync:*`)
+- `docs/templates/` — structured templates for GDD, TDD, QA plans, and other deliverables
+- `docs/orchestration/` — agent routing, role handoffs, and workflow sequences
+- `tests/` — how the scaffold verifies itself
+- harness adapters — how different AI clients consume the same source of truth
+
+## Engine Isolation Policy
+The repository is intentionally split into:
+- `rules/common/`
+- `rules/unity/`
+- `rules/unreal/`
+- `rules/godot/`
+- `rules/web/`
+
+And equivalent skill / command / review layers where needed.
+
+Shared documents should describe **intent**, **ownership**, and **quality bars**. Engine-specific files should describe **implementation conventions** inside that engine only.
+
+## AI Asset Generation (optional)
+The scaffold ships an **optional** engine-neutral asset generation layer. It is an
+upgrade, not a dependency: the default asset workflow is unchanged, and AI generation
+only activates when a provider API key is present in the environment.
+
+**Without a key (default).** Use the scaffold's built-in tooling exactly as always:
+the engine placeholder commands (`/unity-placeholders`, `/godot-placeholders`,
+`/web-placeholders`) and the procedural / Canvas / WebAudio pipelines. A game built
+entirely on placeholders is a complete, valid result — nothing about the workflow
+requires an API.
+
+**With a key (`FAL_KEY` for the default fal.ai provider).** `/generate-assets` becomes
+available to upgrade placeholders to real content from text prompts:
+
+1. Generate placeholders first so every asset has a stable name and path.
+2. Run `/generate-assets` to produce images and textures, equirectangular skyboxes, 3D models (GLB/OBJ), sound effects, music, voice lines, and intro/cinematic video — dropped onto those same names and paths (zero code changes).
+3. Import through the active engine layer and review with the matching pass command (`/art-2d-pass`, `/art-3d-pass`, `/audio-pass`).
+
+**Resolution order, quality, and cost.** For images and skyboxes the scaffold prefers a
+free harness-native generator (e.g. Codex `$imagegen`) when the running harness has one,
+then the paid API, then placeholders; 3D/audio/video only have the API or placeholder
+paths. Quality vs price is the user's dial: every capability has `budget` / `balanced` /
+`premium` tiers (`--quality`, default `balanced`) — a full asset pass runs roughly
+$2-3 / $5-7 / $10+ respectively. Because the API costs money, generation also asks before
+spending: every run prints a cost estimate, and `scripts/generate-assets.js` refuses runs
+at or above a configurable threshold (`confirmOverUsd`) without explicit confirmation.
+Autonomous flows like `/full-game` keep placeholders as the default and ask once — tier
+and spend — before generating.
+
+Capability-to-model routing lives in [manifests/asset-providers.json](manifests/asset-providers.json) (default provider: fal.ai — one pay-per-use key covers every modality). `scripts/generate-assets.js` performs the generation and writes a `.provenance.json` sidecar (provider, model, prompt, seed, request id) per run; assets without provenance are treated as unlicensed content. The key is read only from the `FAL_KEY` environment variable and is never committed (`.env` files are gitignored). Governance rules — the optional-capability, resolution-order, and cost-confirmation policy — live in [rules/common/asset-pipeline.md](rules/common/asset-pipeline.md). For a worked end-to-end example see the `samples/PrismDefense3DAssetsGen` variant.
+
+## Intended Use Cases
+- New game project setup
+- Multi-engine studio workflows
+- Internal AI workflow standardization
+- GDD and technical design maintenance
+- QA and release readiness reviews
+- Plugin / content / tooling governance
+- Cross-discipline planning and orchestration
+
+## Supported Harnesses
+- Claude Code
+- Codex
+- Cursor
+- OpenCode
+- Kiro
+- Grok Build
+- Kilo
+
+Each harness adapter points back to the same shared scaffold rather than becoming a second source of truth.
+
+### MCP servers
+The scaffold curates a set of MCP servers (browser playtesting, AI asset generation, Blender/DCC control, and more) in [mcp-configs/mcp-servers.json](mcp-configs/mcp-servers.json), with ready-to-use, harness-native configs generated into [mcp-configs/generated/](mcp-configs/generated/). MCP is vendor-neutral, so they work with any MCP-capable client. See [docs/mcp-setup.md](docs/mcp-setup.md) for per-harness install and a Blender end-to-end walkthrough.
+
+### Codex usage
+Codex should start from `AGENTS.md` and `.codex/README.md`. Slash-style commands such as `/plan`, `/gdd`, and `/unity-review` map to `commands/<name>.md`; if the Codex client does not execute slash commands natively, type the command name in chat and ask Codex to run the matching scaffold command.
+For raster-first asset work in Codex, use `$imagegen` alongside the shared art pipeline skills. Good fits include concept sheets, sprite source art, UI mockups, marketing key art, painted backgrounds, and bitmap edits; keep vector/code-native asset work in the normal repo workflows. If a generated image becomes a real project asset, move the selected file from `$CODEX_HOME/generated_images/...` into the workspace and keep the scaffold's naming and folder conventions.
+
+## Current Status
+The scaffold is intentionally modular. Different blocks may be added or replaced over time, but the repository should always preserve:
+- flat agent and command structures
+- layered rules
+- grouped skills
+- engine isolation
+- harness portability
+
+## Principles
+- Design before implementation
+- Explicit ownership over implicit assumptions
+- Testability over cleverness
+- Documentation that supports execution
+- Measured performance and release readiness
+- Accessibility, QA, and compliance as first-class requirements
+
+## License
+This repository is provided under the MIT License unless you replace it with your studio’s internal licensing policy.

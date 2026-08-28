@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>五子棋</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .chess-board {
+            border: 2px solid #8b4513;
+            background-color: #deb887;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(15, 40px);
+            grid-template-rows: repeat(15, 40px);
+            gap: 0;
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            background-color: #f0d9b5;
+            border: 1px solid #8b4513;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .chess-piece {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .black {
+            background-color: #000000;
+            border: 1px solid #333;
+        }
+
+        .white {
+            background-color: #ffffff;
+            border: 1px solid #999;
+        }
+
+        .player-turn {
+            margin: 20px 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .restart-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            background-color: #654321;
+        }
+
+        .winner-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px 40px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-turn">当前玩家: 黑棋</div>
+    <div class="chess-board">
+        <div class="grid" id="chess-grid"></div>
+    </div>
+    <button class="restart-btn" onclick="restartGame()">重启游戏</button>
+    <div class="winner-popup" id="winner-popup">
+        <div id="winner-text"></div>
+        <button onclick="restartGame()">再玩一次</button>
+    </div>
+
+    <script>
+        const rows = 15;
+        const cols = 15;
+        let currentPlayer = 'black';
+        let gameBoard = Array(rows).fill().map(() => Array(cols).fill(0));
+        let gameActive = true;
+
+        function createBoard() {
+            const grid = document.getElementById('chess-grid');
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.onclick = () => handleCellClick(i, j);
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function handleCellClick(row, col) {
+            if (!gameActive || gameBoard[row][col] !== 0) return;
+
+            const cell = document.querySelector(`.cell:nth-child(${row * cols + col + 1})`);
+            if (currentPlayer === 'black') {
+                placePiece(cell, 'black');
+                gameBoard[row][col] = 1;
+                currentPlayer = 'white';
+                document.querySelector('.player-turn').textContent = '当前玩家: 白棋';
+            } else {
+                placePiece(cell, 'white');
+                gameBoard[row][col] = 2;
+                currentPlayer = 'black';
+                document.querySelector('.player-turn').textContent = '当前玩家: 黑棋';
+            }
+
+            if (checkWin(row, col)) {
+                gameActive = false;
+                showWinner(currentPlayer === 'black' ? '白棋' : '黑棋');
+            }
+        }
+
+        function placePiece(cell, color) {
+            const piece = document.createElement('div');
+            piece.className = `chess-piece ${color}`;
+            cell.appendChild(piece);
+        }
+
+        function checkWin(row, col) {
+            const player = gameBoard[row][col];
+            const directions = [
+                { x: 0, y: 1 },    //水平
+                { x: 1, y: 0 },    //垂直
+                { x: 1, y: 1 },    //右对角
+                { x: 1, y: -1 }    //左对角
+            ];
+
+            for (let direction of directions) {
+                let count = 1;
+                for (let step = 1; step <= 4; step++) {
+                    let r = row + direction.x * step;
+                    let c = col + direction.y * step;
+
+                    if (r >= 0 && r < rows && c >= 0 && c < cols) {
+                        if (gameBoard[r][c] === player) {
+                            count++;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                for (let step = 1; step <= 4; step++) {
+                    let r = row - direction.x * step;
+                    let c = col - direction.y * step;
+
+                    if (r >= 0 && r < rows && c >= 0 && c < cols) {
+                        if (gameBoard[r][c] === player) {
+                            count++;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                if (count >= 5) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function showWinner(winner) {
+            document.getElementById('winner-popup').style.display = 'block';
+            document.getElementById('winner-text').textContent = `${winner} 胜利！`;
+        }
+
+        function restartGame() {
+            gameBoard = Array(rows).fill().map(() => Array(cols).fill(0));
+            currentPlayer = 'black';
+            gameActive = true;
+            document.querySelector('.player-turn').textContent = '当前玩家: 黑棋';
+            document.getElementById('chess-grid').innerHTML = '';
+            createBoard();
+            document.getElementById('winner-popup').style.display = 'none';
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>

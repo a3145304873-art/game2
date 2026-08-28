@@ -1,0 +1,8 @@
+# Build artifacts
+*.o
+arcade
+.arcade_scores
+
+# OS files
+.DS_Store
+Thumbs.db

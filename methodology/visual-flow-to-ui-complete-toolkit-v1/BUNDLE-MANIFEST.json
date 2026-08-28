@@ -1,0 +1,37 @@
+{
+  "name": "visual-flow-to-ui-complete-toolkit",
+  "version": "1.0.0",
+  "purpose": "Screenshot-led UI reconstruction with image-backed component reuse and browser-verified interaction flows.",
+  "skills": [
+    {
+      "name": "visual-flow-to-ui",
+      "path": "skills/visual-flow-to-ui",
+      "role": "Orchestrates page/state mapping, asset reuse, implementation contracts, and final acceptance."
+    },
+    {
+      "name": "visual-to-spec",
+      "path": "skills/visual-to-spec",
+      "role": "Extracts layout, visible-component evidence, tokens, and implementation risk from references."
+    },
+    {
+      "name": "frontend-design",
+      "path": "skills/frontend-design",
+      "role": "Guides high-quality responsive frontend implementation and component reuse."
+    },
+    {
+      "name": "imagegen",
+      "path": "skills/imagegen",
+      "role": "Generates or edits missing complex raster visuals; requires a Codex image-generation capability."
+    },
+    {
+      "name": "control-in-app-browser",
+      "path": "browser-runtime/skills/control-in-app-browser",
+      "role": "Performs visual and interaction QA; requires Codex's browser plugin/runtime."
+    }
+  ],
+  "browserRuntimeBridge": "browser-runtime/scripts/browser-client.mjs",
+  "limitations": [
+    "The included Browser QA instructions and bridge require a Codex environment with the Browser plugin/runtime enabled.",
+    "The included ImageGen instructions require a Codex environment with the built-in image-generation tool enabled."
+  ]
+}

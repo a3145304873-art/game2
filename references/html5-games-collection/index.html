@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5 Games Collection | HTML5 小游戏合集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .games-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5em;
+            background: #f8f8f8;
+        }
+
+        .game-info {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .game-description {
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .play-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .play-button:hover {
+            background: #45a049;
+        }
+
+        @media (max-width: 600px) {
+            .games-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 添加语言切换按钮样式 */
+        .language-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .language-switch:hover {
+            background: #45a049;
+        }
+
+        [lang="en"] {
+            display: none;
+        }
+
+        .en [lang="zh"] {
+            display: none;
+        }
+
+        .en [lang="en"] {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <button class="language-switch" onclick="toggleLanguage()">EN/中文</button>
+
+    <h1 lang="zh">每天一个 HTML5 小游戏</h1>
+    <h1 lang="en">HTML5 Games Collection</h1>
+    
+    <div class="games-container">
+        <div class="game-card">
+            <div class="game-image">📦</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">推箱子</h2>
+                <h2 class="game-title" lang="en">Sokoban</h2>
+                <p class="game-description" lang="zh">经典推箱子游戏，考验你的空间思维能力</p>
+                <p class="game-description" lang="en">Classic puzzle game that tests your spatial thinking</p>
+                <a href="Sokoban.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="Sokoban.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">🎲</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">2048</h2>
+                <h2 class="game-title" lang="en">2048</h2>
+                <p class="game-description" lang="zh">数字合并游戏，看看你能达到多高的分数</p>
+                <p class="game-description" lang="en">Merge numbers and try to reach 2048!</p>
+                <a href="2048.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="2048.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">👻</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">吃豆人</h2>
+                <h2 class="game-title" lang="en">Pacman</h2>
+                <p class="game-description" lang="zh">经典街机游戏，吃掉所有豆子，躲避幽灵</p>
+                <p class="game-description" lang="en">Classic arcade game, eat all dots while avoiding ghosts</p>
+                <a href="pacman.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="pacman.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">🏓</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">乒乓球</h2>
+                <h2 class="game-title" lang="en">Pong</h2>
+                <p class="game-description" lang="zh">经典的乒乓球对战游戏</p>
+                <p class="game-description" lang="en">Classic table tennis arcade game</p>
+                <a href="pong.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="pong.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">🎮</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">打砖块</h2>
+                <h2 class="game-title" lang="en">Breakout</h2>
+                <p class="game-description" lang="zh">控制挡板反弹球击碎砖块</p>
+                <p class="game-description" lang="en">Control the paddle to break all the bricks</p>
+                <a href="breakout.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="breakout.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">⭕</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">五子棋</h2>
+                <h2 class="game-title" lang="en">Gomoku</h2>
+                <p class="game-description" lang="zh">经典的五子连珠游戏</p>
+                <p class="game-description" lang="en">Classic Five-in-a-Row board game</p>
+                <a href="Gomoku.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="Gomoku.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+  <div class="game-card">
+            <div class="game-image">⬛</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">俄罗斯方块</h2>
+                <h2 class="game-title" lang="en">Tetris</h2>
+                <p class="game-description" lang="zh">经典益智游戏</p>
+                <p class="game-description" lang="en">Classic puzzle game that tests your spatial thinking</p>
+                <a href="Tetris.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="Tetris.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+
+        <div class="game-card">
+            <div class="game-image">🐦</div>
+            <div class="game-info">
+                <h2 class="game-title" lang="zh">Flappy鸟</h2>
+                <h2 class="game-title" lang="en">Flappy bird</h2>
+                <p class="game-description" lang="zh">经典微操？游戏</p>
+                <p class="game-description" lang="en">Classic puzzle game that tests your spatial thinking</p>
+                <a href="FlappyBird.html" class="play-button" lang="zh">开始游戏</a>
+                <a href="FlappyBird.html" class="play-button" lang="en">Play Now</a>
+            </div>
+        </div>
+    </div>
+	
+
+	      
+    <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #666;">
+        <a href="https://github.com/Anionex" style="color: #4CAF50; text-decoration: none; margin-right: 10px;">GitHub</a>
+        <span lang="zh">By 2024 anion</span>
+        <span lang="en">By 2024 anion</span>
+        <p lang="zh">© 2024 anion 版权所有</p>
+        <p lang="en">© 2024 anion All Rights Reserved</p>
+    </footer>
+
+    <script>
+        function toggleLanguage() {
+            document.body.classList.toggle('en');
+        }
+    </script>
+</body>
+</html> 

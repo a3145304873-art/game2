@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大鹅模型 → 2D 素材 渲染导出器</title>
+<style>
+  body{font-family:"Microsoft YaHei",sans-serif;background:#232a1e;color:#eee;margin:0;padding:24px;text-align:center}
+  h1{font-size:20px;letter-spacing:2px}
+  p.tip{color:#b9c9a0;font-size:13px;line-height:1.8;margin:8px auto 16px;max-width:640px}
+  #stage{width:340px;height:340px;margin:0 auto;border:1px dashed #5a6b45;border-radius:12px;background:#1a2015}
+  .row{margin:14px 0}
+  button{background:#e8c878;color:#3a2a08;border:0;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;margin:0 6px}
+  button.sec{background:#3c4a2e;color:#d6e2c0}
+  input[type=range]{width:220px;vertical-align:middle}
+  #status{color:#e8c878;font-size:13px;min-height:20px;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>大鹅模型 → 2D 素材渲染导出器</h1>
+<p class="tip">
+  用途：把《大鹅吃草》提取出的 <b>assets_ref/goose.glb</b>（400KB，含骨骼动画）渲染成 2D 透明 PNG，供《鹅鹅牧场》注入。<br>
+  ① 点「选择 goose.glb」载入模型（页面对着鹅）→ ② 拖动角度滑杆让<b>鹅头朝上</b> → ③ 点导出。<br>
+  导出 goose.png（单帧静态）或 goose_strip.png（8 帧动画条带，游戏内按 10fps 循环）。<br>
+  导出后把文件放进 <b>demos/assets_ref/</b>，在 demos 目录执行 <b>node inject-assets.js</b> 即完成注入。
+</p>
+
+<div id="stage"></div>
+<div class="row">
+  <button onclick="fileInput.click()">选择 goose.glb</button>
+  <input type="file" id="fileInput" accept=".glb" style="display:none">
+</div>
+<div class="row">
+  朝向微调 <input type="range" id="rot" min="0" max="360" value="0">
+  <button class="sec" id="btn-png">导出单帧 goose.png</button>
+  <button class="sec" id="btn-strip">导出动画条带 goose_strip.png</button>
+</div>
+<div id="status">等待载入模型…（需联网加载 three.js）</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+const $=id=>document.getElementById(id), status=t=>$('status').textContent=t;
+const SIZE=512;
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setSize(SIZE,SIZE); renderer.setClearColor(0,0);
+$('stage').appendChild(renderer.domElement);
+renderer.domElement.style.cssText='width:100%;height:100%';
+
+const scene=new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff,0x777766,1.15));
+const dir=new THREE.DirectionalLight(0xffffff,1.4); dir.position.set(2,4,3); scene.add(dir);
+const cam=new THREE.PerspectiveCamera(38,1,0.01,100);
+const group=new THREE.Group(); scene.add(group);
+let model=null,mixer=null,clip=null;
+
+$('fileInput').onchange=async e=>{
+  const buf=await e.target.files[0].arrayBuffer(); load(buf);
+};
+/* 若通过 http 服务访问则自动尝试载入同目录 assets_ref/goose.glb（file:// 下浏览器会拦 fetch，手动选择即可） */
+try{
+  const r=await fetch('./assets_ref/goose.glb');
+  if(r.ok){ load(await r.arrayBuffer()); status('已自动载入 assets_ref/goose.glb'); }
+}catch(err){/* file:// 场景忽略 */}
+
+function load(buf){
+  const loader=new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.parse(buf,'',gltf=>{
+    if(model) group.remove(model);
+    model=gltf.scene; group.add(model);
+    clip=gltf.animations[0]||null;
+    if(clip){ mixer=new THREE.AnimationMixer(model); mixer.clipAction(clip).play(); }
+    // 归一化尺寸并把包围盒中心移到原点
+    const box=new THREE.Box3().setFromObject(model);
+    const size=box.getSize(new THREE.Vector3()), ctr=box.getCenter(new THREE.Vector3());
+    const k=2.2/Math.max(size.x,size.y,size.z);
+    model.scale.setScalar(k);
+    model.position.set(-ctr.x*k,-(box.min.y+size.y/2)*k,-ctr.z*k);
+    cam.position.set(0,3.1,1.9); cam.lookAt(0,0,0);
+    status('模型已载入'+(clip?'，检测到动画「'+clip.name+'」':'（无动画）')+'。请用滑杆把鹅头调到朝上。');
+  },err=>status('解析失败：'+err.message));
+}
+$('rot').oninput=e=>group.rotation.y=e.target.value*Math.PI/180;
+
+(function loop(){ requestAnimationFrame(loop);
+  if(mixer&&clip) mixer.update(1/60);
+  renderer.render(scene,cam);
+})();
+
+function save(canvas,name){ canvas.toBlob(b=>{ const a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=name; a.click(); status('已导出 '+name+'，请放入 assets_ref/ 后执行 node inject-assets.js'); }); }
+
+$('btn-png').onclick=()=>{ if(!model)return status('请先载入模型'); save(renderer.domElement,'goose.png'); };
+$('btn-strip').onclick=()=>{
+  if(!model)return status('请先载入模型');
+  if(!mixer||!clip)return status('该模型没有动画，请改用单帧导出');
+  const c=document.createElement('canvas'); c.width=SIZE*8; c.height=SIZE;
+  const g=c.getContext('2d'); const act=mixer.clipAction(clip), dur=clip.duration;
+  for(let i=0;i<8;i++){
+    act.time=i/8*dur; mixer.update(0);
+    renderer.render(scene,cam); g.drawImage(renderer.domElement,i*SIZE,0);
+  }
+  save(c,'goose_strip.png');
+};
+</script>
+</body>
+</html>

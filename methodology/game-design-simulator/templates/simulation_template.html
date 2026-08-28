@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 游戏数值模拟器 - [功能名称]</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 0;
+        }
+
+        /* 左侧配置区 */
+        .config-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-right: 1px solid #e9ecef;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .config-section {
+            margin-bottom: 25px;
+        }
+
+        .config-section h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .range-value {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .btn-run {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-run:active {
+            transform: translateY(0);
+        }
+
+        /* 右侧结果区 */
+        .result-panel {
+            padding: 25px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .metric-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .metric-card .label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .chart-container h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .data-table-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .data-table-container h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .crit-yes {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .crit-no {
+            color: #999;
+        }
+
+        .btn-export {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background 0.3s;
+        }
+
+        .btn-export:hover {
+            background: #218838;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .config-panel {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+                max-height: none;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 游戏数值模拟器</h1>
+            <p>[功能名称] - 战斗系统验证工具</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧配置区 -->
+            <div class="config-panel">
+                <!-- 玩家属性 -->
+                <div class="config-section">
+                    <h3>📊 玩家属性</h3>
+                    <div class="form-group">
+                        <label>基础生命值 (HP)</label>
+                        <input type="number" id="player_hp" value="1000" step="50" min="100" max="10000">
+                    </div>
+                    <div class="form-group">
+                        <label>基础攻击力</label>
+                        <input type="number" id="player_attack" value="150" step="10" min="10" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>基础防御力</label>
+                        <input type="number" id="player_defense" value="80" step="5" min="0" max="500">
+                    </div>
+                    <div class="form-group">
+                        <label>暴击率：<span class="range-value" id="crit_rate_value">10%</span></label>
+                        <input type="range" id="crit_rate" min="0" max="100" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>暴击伤害：<span class="range-value" id="crit_dmg_value">200%</span></label>
+                        <input type="range" id="crit_damage" min="150" max="300" value="200" step="10">
+                    </div>
+                </div>
+
+                <!-- 技能参数 -->
+                <div class="config-section">
+                    <h3>⚔️ 技能参数</h3>
+                    <div class="form-group">
+                        <label>技能伤害系数：<span class="range-value" id="skill_mult_value">1.5</span></label>
+                        <input type="range" id="skill_multiplier" min="1.0" max="5.0" value="1.5" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>冷却回合数</label>
+                        <input type="number" id="cooldown" value="3" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label>命中叠加 BUFF 层数</label>
+                        <input type="number" id="buff_stacks" value="1" min="0" max="5">
+                    </div>
+                </div>
+
+                <!-- BUFF 参数 -->
+                <div class="config-section">
+                    <h3>🔄 BUFF 参数</h3>
+                    <div class="form-group">
+                        <label>最大叠加层数</label>
+                        <input type="number" id="buff_max" value="10" min="1" max="20">
+                    </div>
+                    <div class="form-group">
+                        <label>每层效果：<span class="range-value" id="buff_effect_value">10%</span></label>
+                        <input type="range" id="buff_effect" min="5" max="50" value="10" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label>持续回合数</label>
+                        <input type="number" id="buff_duration" value="5" min="1" max="10">
+                    </div>
+                </div>
+
+                <!-- 运行控制 -->
+                <div class="config-section">
+                    <h3>🚀 运行控制</h3>
+                    <div class="form-group">
+                        <label>模拟回合数</label>
+                        <input type="number" id="sim_turns" value="10" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label>敌人基础 HP</label>
+                        <input type="number" id="enemy_hp" value="5000" step="100" min="100" max="100000">
+                    </div>
+                    <div class="form-group">
+                        <label>敌人防御力</label>
+                        <input type="number" id="enemy_defense" value="100" step="10" min="0" max="1000">
+                    </div>
+                    <button class="btn-run" onclick="runSimulation()">▶️ 开始模拟</button>
+                </div>
+            </div>
+
+            <!-- 右侧结果区 -->
+            <div class="result-panel">
+                <!-- 状态信息 -->
+                <div id="status_message" class="status-message hidden"></div>
+
+                <!-- 关键指标 -->
+                <div class="metrics-grid hidden" id="metrics">
+                    <div class="metric-card">
+                        <span class="value" id="total_damage">0</span>
+                        <span class="label">总伤害</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="value" id="avg_damage">0</span>
+                        <span class="label">平均伤害/回合</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="value" id="crit_count">0</span>
+                        <span class="label">暴击次数</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="value" id="final_buff">0</span>
+                        <span class="label">最终 BUFF 层数</span>
+                    </div>
+                </div>
+
+                <!-- 图表区 -->
+                <div class="charts-grid hidden" id="charts">
+                    <div class="chart-container">
+                        <h4>📈 HP 变化曲线</h4>
+                        <canvas id="hpChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h4>📊 伤害分布</h4>
+                        <canvas id="damageChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 数据表格 -->
+                <div class="data-table-container hidden" id="data_table_container">
+                    <h4>📋 回合详情</h4>
+                    <table id="data_table">
+                        <thead>
+                            <tr>
+                                <th>回合</th>
+                                <th>伤害</th>
+                                <th>暴击</th>
+                                <th>敌人 HP</th>
+                                <th>BUFF 层数</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button class="btn-export" onclick="exportCSV()" style="margin-top: 15px;">📥 导出 CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量存储模拟结果
+        let simulationResults = [];
+        let hpChartInstance = null;
+        let damageChartInstance = null;
+
+        // 滑块值实时更新
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const valueSpan = document.getElementById(this.id + '_value');
+                if (valueSpan) {
+                    if (this.id === 'crit_rate' || this.id === 'crit_damage' || this.id === 'buff_effect') {
+                        valueSpan.textContent = this.value + '%';
+                    } else {
+                        valueSpan.textContent = this.value;
+                    }
+                }
+            });
+        });
+
+        // 模拟逻辑
+        class BuffEffect {
+            constructor(name, stackCount = 0, maxStacks = 10, effectPerStack = 0.1, durationTurns = 5) {
+                this.name = name;
+                this.stackCount = stackCount;
+                this.maxStacks = maxStacks;
+                this.effectPerStack = effectPerStack;
+                this.durationTurns = durationTurns;
+                this.remainingTurns = durationTurns;
+            }
+
+            getTotalEffect() {
+                return this.effectPerStack * Math.min(this.stackCount, this.maxStacks);
+            }
+
+            tick() {
+                this.remainingTurns--;
+                return this.remainingTurns <= 0;
+            }
+
+            addStack(count = 1) {
+                this.stackCount = Math.min(this.stackCount + count, this.maxStacks);
+                this.remainingTurns = this.durationTurns;
+            }
+        }
+
+        class Character {
+            constructor(name, maxHp, currentHp, attack, defense, critRate = 0.1, critDamage = 2.0) {
+                this.name = name;
+                this.maxHp = maxHp;
+                this.currentHp = currentHp;
+                this.attack = attack;
+                this.defense = defense;
+                this.critRate = critRate;
+                this.critDamage = critDamage;
+                this.buffList = [];
+            }
+
+            isAlive() {
+                return this.currentHp > 0;
+            }
+
+            takeDamage(damage) {
+                this.currentHp -= damage;
+                if (this.currentHp <= 0) {
+                    this.currentHp = 0;
+                    return true; // 死亡
+                }
+                return false;
+            }
+
+            getAttackMultiplier() {
+                let multiplier = 1.0;
+                for (let buff of this.buffList) {
+                    if (buff.name === '攻击加成') {
+                        multiplier += buff.getTotalEffect();
+                    }
+                }
+                return multiplier;
+            }
+
+            addBuff(buff) {
+                const existingBuff = this.buffList.find(b => b.name === buff.name);
+                if (existingBuff) {
+                    existingBuff.addStack(buff.stackCount);
+                } else {
+                    this.buffList.push(buff);
+                }
+            }
+
+            tickBuffs() {
+                this.buffList = this.buffList.filter(buff => !buff.tick());
+            }
+
+            getBuffStacks() {
+                return this.buffList.reduce((sum, buff) => sum + buff.stackCount, 0);
+            }
+        }
+
+        class Skill {
+            constructor(name, damageMultiplier, maxCooldown, buffStacksOnHit = 1) {
+                this.name = name;
+                this.damageMultiplier = damageMultiplier;
+                this.maxCooldown = maxCooldown;
+                this.currentCooldown = 0;
+                this.buffStacksOnHit = buffStacksOnHit;
+            }
+
+            isAvailable() {
+                return this.currentCooldown === 0;
+            }
+
+            use() {
+                if (this.isAvailable()) {
+                    this.currentCooldown = this.maxCooldown;
+                }
+            }
+
+            tickCooldown() {
+                if (this.currentCooldown > 0) {
+                    this.currentCooldown--;
+                }
+            }
+        }
+
+        function calculateDamage(attacker, defender, skill = null) {
+            const attackMultiplier = attacker.getAttackMultiplier();
+            let baseAttack = attacker.attack * attackMultiplier;
+
+            if (skill) {
+                baseAttack *= skill.damageMultiplier;
+            }
+
+            // 减法公式：伤害 = 攻击 - 防御
+            let rawDamage = baseAttack - defender.defense;
+
+            // 暴击判定
+            const isCrit = Math.random() < attacker.critRate;
+            if (isCrit) {
+                rawDamage *= attacker.critDamage;
+            }
+
+            // 最低伤害保护
+            const finalDamage = Math.max(0, Math.floor(rawDamage));
+
+            return {
+                damage: finalDamage,
+                isCrit: isCrit,
+                baseAttack: baseAttack
+            };
+        }
+
+        function simulateTurn(turnNumber, player, enemy, skill) {
+            const stats = {
+                turn: turnNumber,
+                damageDealt: 0,
+                isCrit: false,
+                playerHpBefore: player.currentHp,
+                enemyHpBefore: enemy.currentHp,
+                playerHpAfter: 0,
+                enemyHpAfter: 0,
+                playerBuffStacks: 0,
+                skillReady: skill.isAvailable(),
+                enemyDead: false
+            };
+
+            if (skill.isAvailable()) {
+                skill.use();
+                const damageResult = calculateDamage(player, enemy, skill);
+                stats.damageDealt = damageResult.damage;
+                stats.isCrit = damageResult.isCrit;
+
+                const isDead = enemy.takeDamage(damageResult.damage);
+                stats.enemyHpAfter = enemy.currentHp;
+
+                if (skill.buffStacksOnHit > 0) {
+                    const buff = new BuffEffect('攻击加成', skill.buffStacksOnHit,
+                        parseInt(document.getElementById('buff_max').value),
+                        parseInt(document.getElementById('buff_effect').value) / 100,
+                        parseInt(document.getElementById('buff_duration').value));
+                    player.addBuff(buff);
+                }
+
+                stats.playerBuffStacks = player.getBuffStacks();
+
+                if (isDead) {
+                    stats.enemyDead = true;
+                }
+            } else {
+                const damageResult = calculateDamage(player, enemy);
+                stats.damageDealt = damageResult.damage;
+                stats.isCrit = damageResult.isCrit;
+                enemy.takeDamage(damageResult.damage);
+                stats.enemyHpAfter = enemy.currentHp;
+            }
+
+            player.tickBuffs();
+            skill.tickCooldown();
+
+            stats.playerHpAfter = player.currentHp;
+            stats.playerBuffStacks = player.getBuffStacks();
+
+            return stats;
+        }
+
+        function runSimulation() {
+            // 获取配置值
+            const playerHp = parseInt(document.getElementById('player_hp').value);
+            const playerAttack = parseInt(document.getElementById('player_attack').value);
+            const playerDefense = parseInt(document.getElementById('player_defense').value);
+            const critRate = parseInt(document.getElementById('crit_rate').value) / 100;
+            const critDamage = parseInt(document.getElementById('crit_damage').value) / 100;
+
+            const skillMultiplier = parseFloat(document.getElementById('skill_multiplier').value);
+            const cooldown = parseInt(document.getElementById('cooldown').value);
+            const buffStacks = parseInt(document.getElementById('buff_stacks').value);
+
+            const simTurns = parseInt(document.getElementById('sim_turns').value);
+            const enemyHp = parseInt(document.getElementById('enemy_hp').value);
+            const enemyDefense = parseInt(document.getElementById('enemy_defense').value);
+
+            // 初始化实体
+            const player = new Character('玩家', playerHp, playerHp, playerAttack, playerDefense, critRate, critDamage);
+            const enemy = new Character('敌人', enemyHp, enemyHp, 0, enemyDefense);
+            const skill = new Skill('强力一击', skillMultiplier, cooldown, buffStacks);
+
+            // 运行模拟
+            simulationResults = [];
+            for (let turn = 1; turn <= simTurns; turn++) {
+                if (!enemy.isAlive()) break;
+
+                const turnStats = simulateTurn(turn, player, enemy, skill);
+                simulationResults.push(turnStats);
+
+                if (turnStats.enemyDead) break;
+            }
+
+            // 显示结果
+            displayResults();
+        }
+
+        function displayResults() {
+            if (simulationResults.length === 0) {
+                showStatus('模拟结果为空', 'warning');
+                return;
+            }
+
+            // 计算统计
+            const totalDamage = simulationResults.reduce((sum, r) => sum + r.damageDealt, 0);
+            const avgDamage = totalDamage / simulationResults.length;
+            const critCount = simulationResults.filter(r => r.isCrit).length;
+            const finalBuff = simulationResults[simulationResults.length - 1].playerBuffStacks;
+            const enemyDefeated = simulationResults.some(r => r.enemyDead);
+
+            // 更新指标
+            document.getElementById('total_damage').textContent = totalDamage.toLocaleString();
+            document.getElementById('avg_damage').textContent = avgDamage.toFixed(1);
+            document.getElementById('crit_count').textContent = critCount;
+            document.getElementById('final_buff').textContent = finalBuff;
+
+            // 显示状态
+            if (enemyDefeated) {
+                showStatus('✅ 敌人已被击败！', 'success');
+            } else {
+                showStatus('⚠️ 敌人未被击败', 'warning');
+            }
+
+            // 显示结果区域
+            document.getElementById('metrics').classList.remove('hidden');
+            document.getElementById('charts').classList.remove('hidden');
+            document.getElementById('data_table_container').classList.remove('hidden');
+
+            // 更新表格
+            updateTable();
+
+            // 更新图表
+            updateCharts();
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status_message');
+            statusEl.textContent = message;
+            statusEl.className = 'status-message ' + (type === 'success' ? 'status-success' : 'status-warning');
+            statusEl.classList.remove('hidden');
+        }
+
+        function updateTable() {
+            const tbody = document.querySelector('#data_table tbody');
+            tbody.innerHTML = '';
+
+            for (const result of simulationResults) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${result.turn}</td>
+                    <td>${result.damageDealt.toLocaleString()}</td>
+                    <td class="${result.isCrit ? 'crit-yes' : 'crit-no'}">${result.isCrit ? '✓ 暴击' : '-'}</td>
+                    <td>${result.enemyHpAfter.toLocaleString()}</td>
+                    <td>${result.playerBuffStacks}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function updateCharts() {
+            // HP 变化图表
+            const hpCtx = document.getElementById('hpChart').getContext('2d');
+            const hpData = {
+                labels: simulationResults.map(r => '回合' + r.turn),
+                datasets: [{
+                    label: '敌人 HP',
+                    data: simulationResults.map(r => r.enemyHpAfter),
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
+
+            if (hpChartInstance) hpChartInstance.destroy();
+            hpChartInstance = new Chart(hpCtx, {
+                type: 'line',
+                data: hpData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 伤害分布图表
+            const dmgCtx = document.getElementById('damageChart').getContext('2d');
+            const dmgData = {
+                labels: simulationResults.map(r => '回合' + r.turn),
+                datasets: [{
+                    label: '伤害',
+                    data: simulationResults.map(r => r.damageDealt),
+                    backgroundColor: simulationResults.map(r => r.isCrit ? '#e74c3c' : '#667eea'),
+                    borderColor: simulationResults.map(r => r.isCrit ? '#c0392b' : '#5a67d8'),
+                    borderWidth: 1
+                }]
+            };
+
+            if (damageChartInstance) damageChartInstance.destroy();
+            damageChartInstance = new Chart(dmgCtx, {
+                type: 'bar',
+                data: dmgData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportCSV() {
+            if (simulationResults.length === 0) return;
+
+            let csv = '回合，伤害，暴击，敌人 HP，BUFF 层数\n';
+            for (const r of simulationResults) {
+                csv += `${r.turn},${r.damageDealt},${r.isCrit ? '是' : '否'},${r.enemyHpAfter},${r.playerBuffStacks}\n`;
+            }
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `simulation_${new Date().getTime()}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+/target
+/pkg
+*.wasm
+*.js
+.arcade_scores
+Cargo.lock

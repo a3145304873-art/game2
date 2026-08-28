@@ -1,0 +1,18 @@
+{
+  "$schema": "../schemas/package-manager.schema.json",
+  "name": "everything-game-dev-code",
+  "adapter": "claude",
+  "mapping": {
+    "commands": "commands/",
+    "rules": "rules/",
+    "skills": "skills/",
+    "agents": "agents/",
+    "contexts": "contexts/",
+    "hooks": "hooks/"
+  },
+  "engine_profiles": [
+    "unity",
+    "unreal",
+    "godot"
+  ]
+}

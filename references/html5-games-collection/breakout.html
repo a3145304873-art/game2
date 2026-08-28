@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Physics Breakout</title>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            background-color: #2c3e50; 
+            margin: 0; 
+            overflow: hidden;
+        }
+        canvas { border: 3px solid #3498db; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Enhanced Game State
+        const game = {
+            score: 0,
+            lives: 3,
+            level: 1,
+            keys: {}  // Track multiple key presses
+        };
+
+        // Advanced Paddle Physics
+        const paddle = {
+            width: 120,
+            height: 15,
+            x: canvas.width / 2 - 60,
+            y: canvas.height - 30,
+            color: '#3498db',
+            velocity: 0,
+            maxVelocity: 10,
+            friction: 0.8,
+            acceleration: 1.2
+        };
+
+        // Improved Ball Physics
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 10,
+            dx: 5,
+            dy: -5,
+            speed: 5,
+            color: '#e74c3c'
+        };
+
+        // Brick Configuration
+        const brickConfig = {
+            rows: 6,
+            cols: 12,
+            width: 60,
+            height: 20,
+            padding: 8,
+            offsetTop: 50,
+            offsetLeft: 25,
+            colors: ['#2ecc71', '#3498db', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c']
+        };
+
+        // Advanced Brick Generation
+        const bricks = [];
+        for (let c = 0; c < brickConfig.cols; c++) {
+            bricks[c] = [];
+            for (let r = 0; r < brickConfig.rows; r++) {
+                bricks[c][r] = { 
+                    x: c * (brickConfig.width + brickConfig.padding) + brickConfig.offsetLeft,
+                    y: r * (brickConfig.height + brickConfig.padding) + brickConfig.offsetTop,
+                    status: 1,
+                    color: brickConfig.colors[r % brickConfig.colors.length]
+                };
+            }
+        }
+
+        // Keyboard Input Handling
+        document.addEventListener('keydown', (e) => {
+            game.keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            game.keys[e.key] = false;
+        });
+
+        // Advanced Paddle Movement
+        function updatePaddleMovement() {
+            // Left movement
+            if (game.keys['ArrowLeft']) {
+                paddle.velocity -= paddle.acceleration;
+            }
+            
+            // Right movement
+            if (game.keys['ArrowRight']) {
+                paddle.velocity += paddle.acceleration;
+            }
+
+            // Apply friction and velocity limits
+            paddle.velocity *= paddle.friction;
+            paddle.velocity = Math.max(-paddle.maxVelocity, Math.min(paddle.maxVelocity, paddle.velocity));
+
+            // Update paddle position
+            paddle.x += paddle.velocity;
+
+            // Boundary checking
+            paddle.x = Math.max(0, Math.min(canvas.width - paddle.width, paddle.x));
+        }
+
+        // Enhanced Collision Physics
+        function advancedCollision() {
+            // Wall collisions with angle preservation
+            if (ball.x + ball.dx > canvas.width - ball.radius || ball.x + ball.dx < ball.radius) {
+                ball.dx = -ball.dx * 1.01;  // Slight speed increase
+            }
+
+            // Ceiling collision
+            if (ball.y + ball.dy < ball.radius) {
+                ball.dy = -ball.dy;
+            }
+
+            // Paddle Collision with Angle Reflection
+            if (ball.y + ball.dy > paddle.y - ball.radius && 
+                ball.x > paddle.x && 
+                ball.x < paddle.x + paddle.width) {
+                
+                // Calculate collision point on paddle
+                let collidePoint = (ball.x - (paddle.x + paddle.width/2)) / (paddle.width/2);
+                
+                // Angle calculation (increased dynamic range)
+                let angle = collidePoint * Math.PI/3;  // Max 60-degree angle
+                
+                // Incorporate paddle velocity into ball trajectory
+                ball.dx = ball.speed * Math.sin(angle);
+                ball.dy = -Math.abs(ball.speed * Math.cos(angle));
+
+                // Optional: Add slight randomness
+                ball.dx += paddle.velocity * 0.2;
+            }
+
+            // Bottom wall (lose life)
+            if (ball.y + ball.dy > canvas.height - ball.radius) {
+                game.lives--;
+                if (game.lives === 0) {
+                    alert('GAME OVER');
+                    document.location.reload();
+                } else {
+                    ball.x = canvas.width / 2;
+                    ball.y = canvas.height / 2;
+                }
+            }
+
+            // Brick Collisions with Color Variation
+            for (let c = 0; c < brickConfig.cols; c++) {
+                for (let r = 0; r < brickConfig.rows; r++) {
+                    const brick = bricks[c][r];
+                    if (brick.status === 1) {
+                        if (ball.x > brick.x && 
+                            ball.x < brick.x + brickConfig.width && 
+                            ball.y > brick.y && 
+                            ball.y < brick.y + brickConfig.height) {
+                            ball.dy = -ball.dy * 1.05;  // Slight speed increase
+                            brick.status = 0;
+                            game.score += 15;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Drawing Functions (Similar to previous implementation)
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
+            ctx.fillStyle = paddle.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = ball.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for (let c = 0; c < brickConfig.cols; c++) {
+                for (let r = 0; r < brickConfig.rows; r++) {
+                    if (bricks[c][r].status === 1) {
+                        ctx.beginPath();
+                        ctx.rect(bricks[c][r].x, bricks[c][r].y, brickConfig.width, brickConfig.height);
+                        ctx.fillStyle = bricks[c][r].color;
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        // Enhanced Game Loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawBricks();
+            drawPaddle();
+            drawBall();
+            
+            updatePaddleMovement();
+            advancedCollision();
+            
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+            
+            // Display score and lives
+            ctx.font = '18px Arial';
+            ctx.fillStyle = 'white';
+            ctx.fillText(`Score: ${game.score}`, 10, 25);
+            ctx.fillText(`Lives: ${game.lives}`, canvas.width - 80, 25);
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        gameLoop();
+    </script>
+</body>
+</html>
+

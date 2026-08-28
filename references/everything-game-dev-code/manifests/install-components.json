@@ -1,0 +1,115 @@
+{
+  "$schema": "../schemas/install-components.schema.json",
+  "version": 1,
+  "description": "Installable component registry for the game-development scaffold.",
+  "components": [
+    {
+      "id": "baseline:rules",
+      "family": "baseline",
+      "summary": "Common and engine-layered rules.",
+      "modules": ["rules-core"]
+    },
+    {
+      "id": "baseline:agents",
+      "family": "baseline",
+      "summary": "Flat agent roster for planning, design, engineering, QA, review, and release.",
+      "modules": ["agents-core"]
+    },
+    {
+      "id": "baseline:commands",
+      "family": "baseline",
+      "summary": "Slash-command layer for orchestration and execution.",
+      "modules": ["commands-core"]
+    },
+    {
+      "id": "baseline:skills",
+      "family": "baseline",
+      "summary": "Shared and engine-specific skills with SKILL.md contracts.",
+      "modules": ["skills-core"]
+    },
+    {
+      "id": "baseline:docs",
+      "family": "baseline",
+      "summary": "Production-ready document templates and orchestration docs.",
+      "modules": ["docs-core"]
+    },
+    {
+      "id": "baseline:contexts",
+      "family": "baseline",
+      "summary": "Context layer for ideation, production, review, QA, release, and live operations.",
+      "modules": ["contexts-core"]
+    },
+    {
+      "id": "engine:unity",
+      "family": "engine",
+      "summary": "Unity rule, skill, command, and review surface.",
+      "modules": ["engine-unity"]
+    },
+    {
+      "id": "engine:unreal",
+      "family": "engine",
+      "summary": "Unreal rule, skill, command, and review surface.",
+      "modules": ["engine-unreal"]
+    },
+    {
+      "id": "engine:godot",
+      "family": "engine",
+      "summary": "Godot rule, skill, command, and review surface.",
+      "modules": ["engine-godot"]
+    },
+    {
+      "id": "engine:web",
+      "family": "engine",
+      "summary": "Web (HTML5) rule, skill, command, and review surface.",
+      "modules": ["engine-web"]
+    },
+    {
+      "id": "domain:workflow",
+      "family": "domain",
+      "summary": "Planning, TDD, verification, orchestration, and learning workflow skills.",
+      "modules": ["domain-workflow"]
+    },
+    {
+      "id": "domain:design",
+      "family": "domain",
+      "summary": "Game design, balance, level, narrative, onboarding, accessibility, and liveops design.",
+      "modules": ["domain-design"]
+    },
+    {
+      "id": "domain:engineering-common",
+      "family": "domain",
+      "summary": "Engine-neutral engineering patterns, architecture, telemetry, performance, and build pipeline skills.",
+      "modules": ["domain-engineering-common"]
+    },
+    {
+      "id": "domain:art-audio-content",
+      "family": "domain",
+      "summary": "Art, technical art, VFX, audio, localization, dialogue, and cinematic pipeline skills.",
+      "modules": ["domain-art-audio-content"]
+    },
+    {
+      "id": "domain:qa-release",
+      "family": "domain",
+      "summary": "QA, certification, crash triage, store submission, and release readiness skills.",
+      "modules": ["domain-qa-release"]
+    },
+    {
+      "id": "capability:multiplayer",
+      "family": "capability",
+      "summary": "Multiplayer architecture, replication, rollback, prediction, and online review coverage.",
+      "modules": ["capability-multiplayer"]
+    },
+    {
+      "id": "capability:liveops",
+      "family": "capability",
+      "summary": "Telemetry, liveops, patching, economy health, and post-launch operations.",
+      "modules": ["capability-liveops"]
+    },
+    {
+      "id": "capability:mobile-f2p",
+      "family": "capability",
+      "summary": "Mobile, F2P, retention, monetization, and content cadence support.",
+      "modules": ["capability-mobile-f2p"]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "../schemas/hooks.schema.json",
+  "version": 1,
+  "description": "Game development workflow hooks for design, engineering, QA, and release.",
+  "hook_runtime": "node",
+  "conventions": {
+    "event_payload_transport": "stdin-json",
+    "script_result_transport": "stdout-json",
+    "profile_env_var": "GAME_DEV_PROFILE",
+    "workspace_env_var": "WORKSPACE_ROOT"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "id": "gdd-sync-warning",
+        "matcher": "Write|Edit|MultiEdit",
+        "script": "../scripts/hooks/gdd-sync-warning.js",
+        "description": "Warn if design-related changes happen without a matching documentation touchpoint."
+      },
+      {
+        "id": "engine-profile-guard",
+        "matcher": "Bash|Write|Edit|MultiEdit",
+        "script": "../scripts/hooks/engine-profile-guard.js",
+        "description": "Warn when engine-specific work is attempted without an active Unity, Unreal, or Godot profile."
+      },
+      {
+        "id": "scene-integrity-check",
+        "matcher": "Write|Edit|MultiEdit",
+        "script": "../scripts/hooks/scene-integrity-check.js",
+        "description": "Flag high-risk scene, level, map, or mission-structure edits that need validation."
+      },
+      {
+        "id": "prefab-blueprint-node-warning",
+        "matcher": "Write|Edit|MultiEdit",
+        "script": "../scripts/hooks/prefab-blueprint-node-warning.js",
+        "description": "Warn when prefab, Blueprint, or node-heavy files are touched without ownership or review context."
+      },
+      {
+        "id": "performance-budget-warning",
+        "matcher": "Write|Edit|MultiEdit",
+        "script": "../scripts/hooks/performance-budget-warning.js",
+        "description": "Warn when likely performance-sensitive systems or content are modified."
+      },
+      {
+        "id": "asset-size-warning",
+        "matcher": "Write|Edit|MultiEdit|Bash",
+        "script": "../scripts/hooks/asset-size-warning.js",
+        "description": "Warn when large or risky asset categories are introduced or modified."
+      }
+    ],
+    "PostToolUse": [
+      {
+        "id": "build-matrix-capture",
+        "matcher": "Bash",
+        "script": "../scripts/hooks/build-matrix-capture.js",
+        "description": "Capture build, test, export, or packaging context for later release debugging."
+      },
+      {
+        "id": "playtest-capture",
+        "matcher": "Write|Edit|MultiEdit",
+        "script": "../scripts/hooks/playtest-capture.js",
+        "description": "Capture playtest note structure when playtest-related docs are edited."
+      },
+      {
+        "id": "crash-log-capture",
+        "matcher": "Read|Write|Edit|MultiEdit|Bash",
+        "script": "../scripts/hooks/crash-log-capture.js",
+        "description": "Capture crash-log and stack-trace metadata when crash evidence appears in the workflow."
+      }
+    ],
+    "Stop": [
+      {
+        "id": "session-summary",
+        "matcher": "*",
+        "script": "../scripts/hooks/session-summary.js",
+        "description": "Write a structured session summary with decisions, risks, and follow-up items."
+      }
+    ]
+  }
+}

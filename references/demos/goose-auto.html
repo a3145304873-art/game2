@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>goose auto render</title></head>
+<body style="margin:0">
+<div id="s" style="font:12px monospace;padding:6px">loading…</div>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+// 用法: goose-auto.html?rot=180  →  渲染 → 自动 POST 保存 goose.png / goose_strip.png → title=DONE
+const q=new URLSearchParams(location.search);
+const rot=+(q.get('rot')||0);
+const $s=document.getElementById('s');
+const status=t=>{$s.textContent=t;};
+const SIZE=512;
+
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setSize(SIZE,SIZE); renderer.setClearColor(0,0);
+document.body.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff,0x777766,1.15));
+const dir=new THREE.DirectionalLight(0xffffff,1.4); dir.position.set(2,4,3); scene.add(dir);
+const cam=new THREE.PerspectiveCamera(38,1,0.01,100);
+const group=new THREE.Group(); scene.add(group);
+
+try{
+  const r=await fetch('./assets_ref/goose.glb');
+  if(!r.ok) throw new Error('fetch glb http '+r.status);
+  const buf=await r.arrayBuffer();
+  const loader=new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.parse(buf,'',gltf=>{
+    const model=gltf.scene; group.add(model);
+    let mixer=null; const clip=gltf.animations[0]||null;
+    if(clip){ mixer=new THREE.AnimationMixer(model); mixer.clipAction(clip).play(); }
+    const box=new THREE.Box3().setFromObject(model);
+    const size=box.getSize(new THREE.Vector3()), ctr=box.getCenter(new THREE.Vector3());
+    const k=1.15/Math.max(size.x,size.y,size.z);
+    model.scale.setScalar(k);
+    model.position.set(-ctr.x*k,-(box.min.y+size.y/2)*k,-ctr.z*k);
+    group.rotation.y=rot*Math.PI/180;
+    cam.position.set(0,4.6,2.9); cam.lookAt(0,0.32,0);
+    status('model ready, clip='+(clip?clip.name:'none'));
+    if(q.get('sweep')) setTimeout(()=>exportSweep(mixer,clip),300);
+    else setTimeout(()=>exportAll(mixer,clip),400);
+  },e=>{ status('parse error: '+e.message); document.title='ERR'; });
+}catch(e){ status(String(e)); document.title='ERR'; }
+
+function post(name,cv){ return new Promise(res=>{
+  cv.toBlob(b=>fetch('/save/'+name,{method:'POST',body:b}).then(()=>res(),'()=>res()'));
+});}
+
+async function exportAll(mixer,clip){
+  // 单帧：定格在动画 25% 处的姿势
+  if(mixer&&clip){ const a=mixer.clipAction(clip); a.play(); a.time=clip.duration*.25; mixer.update(0); }
+  renderer.render(scene,cam);
+  await post('goose.png',renderer.domElement);
+  // 8 帧动画条带
+  if(mixer&&clip){
+    const c=document.createElement('canvas'); c.width=SIZE*8; c.height=SIZE;
+    const g=c.getContext('2d'); const a=mixer.clipAction(clip);
+    for(let i=0;i<8;i++){ a.time=i/8*clip.duration; mixer.update(0); renderer.render(scene,cam); g.drawImage(renderer.domElement,i*SIZE,0); }
+    await post('goose_strip.png',c);
+  }
+  status('DONE rot='+rot);
+  document.title='DONE';
+}
+
+// 角度标定模式：?sweep=1 → 8 个 rot 各渲一格拼成对比图，POST 保存 sweep.png
+async function exportSweep(){
+  const c=document.createElement('canvas'); c.width=SIZE*4; c.height=SIZE*2;
+  const g=c.getContext('2d');
+  for(let i=0;i<8;i++){
+    group.rotation.y=i*Math.PI/4;
+    renderer.render(scene,cam);
+    g.drawImage(renderer.domElement,(i%4)*SIZE,Math.floor(i/4)*SIZE);
+    g.fillStyle='#fff'; g.font='28px monospace';
+    g.fillText('rot='+i*45,(i%4)*SIZE+10,Math.floor(i/4)*SIZE+30);
+  }
+  group.rotation.y=rot*Math.PI/180;
+  await post('sweep.png',c);
+  status('SWEEP DONE'); document.title='DONE';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>vendor fetch</title></head>
+<body style="margin:0"><div id="s" style="font:12px monospace">idle</div>
+<script type="module">
+// 用法: vendor-fetch.html?u=<encodeURIComponent(cdn url)>&n=<保存名>
+// 浏览器代理下载 CDN 文件并回传本地服务（绕过 shell 直连被拦的问题）
+const q=new URLSearchParams(location.search);
+const u=q.get('u'), n=q.get('n');
+const s=document.getElementById('s');
+try{
+  const r=await fetch(u); if(!r.ok) throw new Error('http '+r.status);
+  const buf=await r.arrayBuffer();
+  await fetch('/save/'+n,{method:'POST',body:buf});
+  s.textContent='DONE '+(buf.byteLength/1024).toFixed(0)+'KB';
+  document.title='DONE';
+}catch(e){ s.textContent=String(e); document.title='ERR'; }
+</script>
+</body>
+</html>

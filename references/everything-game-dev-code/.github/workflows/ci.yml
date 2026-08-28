@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      # Single entry point shared with local development: the validator list
+      # lives only in package.json's "validate" script, so CI and local runs
+      # can never drift apart.
+      - name: Validate
+        run: npm run validate
+
+      - name: Show structure artifact diff on failure
+        if: failure()
+        shell: bash
+        run: |
+          npm run sync:structure
+          echo "Changed structure artifact files:"
+          git diff -- STRUCTURE-TREE.txt docs/structure-overview.md || true

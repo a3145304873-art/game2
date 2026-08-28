@@ -1,0 +1,14 @@
+# 超大本地素材库，不进仓库（2.4G）
+/reference/
+
+# 本地工具配置
+/.zcode/
+
+# 依赖与构建产物
+node_modules/
+dist/
+
+# 系统与日志
+.DS_Store
+Thumbs.db
+*.log

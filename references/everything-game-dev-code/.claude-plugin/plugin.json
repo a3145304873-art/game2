@@ -1,0 +1,70 @@
+{
+  "$schema": "../schemas/plugin.schema.json",
+  "name": "everything-game-dev-code",
+  "version": "0.1.0",
+  "display_name": "Everything Game Dev Code",
+  "description": "A game development scaffold for Claude Code with layered rules, specialized agents, reusable skills, workflow commands, contexts, hooks, and engine-isolated packs for Unity, Unreal, and Godot.",
+  "license": "MIT",
+  "homepage": "https://github.com/your-org/everything-game-dev-code",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/everything-game-dev-code.git"
+  },
+  "keywords": [
+    "game-development",
+    "unity",
+    "unreal",
+    "godot",
+    "claude-code",
+    "agents",
+    "skills",
+    "rules",
+    "gdd",
+    "technical-design",
+    "qa",
+    "liveops"
+  ],
+  "compatibility": {
+    "harnesses": [
+      "claude-code"
+    ],
+    "engines": [
+      "unity",
+      "unreal",
+      "godot"
+    ],
+    "disciplines": [
+      "design",
+      "engineering",
+      "qa",
+      "production",
+      "art-audio-content",
+      "liveops"
+    ]
+  },
+  "entrypoints": {
+    "root_memory": "CLAUDE.md",
+    "global_agents": "AGENTS.md",
+    "rules": "rules/",
+    "agents": "agents/",
+    "commands": "commands/",
+    "skills": "skills/",
+    "contexts": "contexts/",
+    "hooks": "hooks/hooks.json",
+    "manifests": "manifests/"
+  },
+  "recommended_profiles": [
+    "preproduction-design-heavy",
+    "unity-production",
+    "unreal-aaa-console",
+    "godot-indie-2d",
+    "mobile-f2p-liveops",
+    "unity-multiplayer"
+  ],
+  "installation_notes": [
+    "Use common rules as the baseline layer.",
+    "Activate only one engine-specific pack at a time unless you are intentionally doing cross-engine analysis.",
+    "Keep engine-specific implementation details inside the corresponding engine layer.",
+    "Treat GDD, technical design, QA, and release documents as living source-of-truth artifacts."
+  ]
+}

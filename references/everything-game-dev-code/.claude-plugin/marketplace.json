@@ -1,0 +1,47 @@
+{
+  "name": "everything-game-dev-code",
+  "slug": "everything-game-dev-code",
+  "display_name": "Everything Game Dev Code",
+  "summary": "A universal game development scaffold for Claude Code with layered rules, agents, skills, commands, hooks, contexts, and isolated engine packs for Unity, Unreal, and Godot.",
+  "source": {
+    "source": "github",
+    "repo": "your-org/everything-game-dev-code",
+    "branch": "main"
+  },
+  "categories": [
+    "game-development",
+    "ai-development-workflows",
+    "unity",
+    "unreal",
+    "godot"
+  ],
+  "files": {
+    "plugin": ".claude-plugin/plugin.json",
+    "root_memory": "CLAUDE.md",
+    "global_agents": "AGENTS.md"
+  },
+  "install": {
+    "recommended_profile": "preproduction-only",
+    "available_profiles": [
+      "preproduction-only",
+      "unity-mobile-f2p",
+      "unreal-console-aaa",
+      "godot-indie-2d",
+      "unity-multiplayer"
+    ]
+  },
+  "engines": [
+    "unity",
+    "unreal",
+    "godot"
+  ],
+  "capabilities": [
+    "planning",
+    "game-design-documentation",
+    "technical-design",
+    "testing-and-qa",
+    "performance-budgeting",
+    "release-readiness",
+    "liveops"
+  ]
+}

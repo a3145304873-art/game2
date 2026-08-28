@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推箱子游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: inline-grid;
+            gap: 1px;
+            background: #333;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            transition: all 0.1s;
+            border-radius: 3px;
+        }
+        .floor {
+            background: #ffffff;
+        }
+        .wall {
+            background: #666;
+            border: 1px solid #444;
+            box-shadow: inset 2px 2px 3px rgba(255,255,255,0.2),
+                       inset -2px -2px 3px rgba(0,0,0,0.2);
+        }
+        .box {
+            background: #b87333;
+            border: 2px solid #8b4513;
+            box-sizing: border-box;
+        }
+        .target {
+            background: #90EE90;
+            border: 2px dashed #006400;
+            box-sizing: border-box;
+        }
+        .player {
+            background: #4169E1;
+            border: 2px solid #000080;
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+        .box-on-target {
+            background: #FFD700;
+            border: 2px solid #DAA520;
+            box-sizing: border-box;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            margin: 0 5px;
+            padding: 8px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #levelInfo, #stepCounter {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .instructions {
+            margin: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .game-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .gamepad {
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            grid-template-rows: repeat(3, 70px);
+            gap: 8px;
+            padding: 15px;
+            background: #444;
+            border-radius: 3px;
+            image-rendering: pixelated;
+        }
+
+        .gamepad button {
+            width: 70px;
+            height: 70px;
+            border: 0;
+            background: #666;
+            cursor: pointer;
+            position: relative;
+            padding: 0;
+            image-rendering: pixelated;
+            box-shadow: 
+                inset -4px -4px 0 0 #444,
+                inset 4px 4px 0 0 #888;
+        }
+
+        .gamepad button:active {
+            background: #555;
+            box-shadow: 
+                inset 4px 4px 0 0 #444,
+                inset -4px -4px 0 0 #888;
+            transform: translate(2px, 2px);
+        }
+
+        .gamepad button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+
+        .gamepad .up::after {
+            border-bottom: 20px solid #fff;
+            border-top: 0;
+            margin-top: -5px;
+        }
+
+        .gamepad .down::after {
+            border-top: 20px solid #fff;
+            border-bottom: 0;
+            margin-top: 5px;
+        }
+
+        .gamepad .left::after {
+            border-right: 20px solid #fff;
+            border-left: 0;
+            margin-left: -5px;
+        }
+
+        .gamepad .right::after {
+            border-left: 20px solid #fff;
+            border-right: 0;
+            margin-left: 5px;
+        }
+
+        .gamepad .up { grid-area: 1/2/2/3; }
+        .gamepad .left { grid-area: 2/1/3/2; }
+        .gamepad .right { grid-area: 2/3/3/4; }
+        .gamepad .down { grid-area: 3/2/4/3; }
+
+        @media (max-width: 768px) {
+            .game-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .gamepad {
+                grid-template-columns: repeat(3, 80px);
+                grid-template-rows: repeat(3, 80px);
+                margin-bottom: 20px;
+            }
+
+            .gamepad button {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>推箱子游戏</h1>
+    <div class="controls">
+        <button onclick="changeLevel(-1)">上一关</button>
+        <button onclick="changeLevel(1)">下一关</button>
+        <button onclick="resetLevel()">重置本关</button>
+        <button onclick="undoMove()">撤销</button>
+    </div>
+    <div id="levelInfo"></div>
+    <div id="stepCounter"></div>
+    <div class="game-wrapper">
+        <div id="game" class="game-container"></div>
+        <div class="gamepad">
+            <button class="up"></button>
+            <button class="left"></button>
+            <button class="right"></button>
+            <button class="down"></button>
+        </div>
+    </div>
+    <div class="instructions">
+        <p>使用方向键或WASD移动，把所有箱子推到目标点上即可过关</p>
+    </div>
+
+    <script>
+        // 0:地板 1:墙 2:箱子 3:目标点 4:玩家 5:箱子在目标点上
+        const levels = [
+            [
+                [1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,1],
+                [1,0,0,2,0,0,1],
+                [1,0,2,4,3,0,1],
+                [1,0,0,3,0,0,1],
+                [1,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1]
+            ],
+            [
+                [1,1,1,1,1,1,1,1],
+                [1,0,0,0,0,0,0,1],
+                [1,0,0,2,2,3,0,1],
+                [1,0,0,0,4,0,0,1],
+                [1,0,3,2,0,0,0,1],
+                [1,0,3,0,0,0,0,1],
+                [1,0,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1,1]
+            ],
+            [
+                [1,1,1,1,1,1,1,1],
+                [1,3,0,0,0,0,3,1],
+                [1,0,2,0,0,2,0,1],
+                [1,0,0,4,2,0,0,1],
+                [1,0,2,0,0,2,0,1],
+                [1,3,0,0,0,0,3,1],
+                [1,0,0,0,0,0,0,1],
+                [1,1,1,1,1,1,1,1]
+            ],
+            [
+    [1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,3,3,1],
+    [1,0,2,2,1,0,0,1],
+    [1,0,0,4,0,0,0,1],
+    [1,0,2,2,1,0,0,1],
+    [1,0,0,0,0,3,3,1],
+    [1,1,1,1,1,1,1,1]
+],
+[
+    [1,1,1,1,1,1,1,1],
+    [1,3,3,3,0,0,0,1],
+    [1,0,0,1,2,2,0,1],
+    [1,0,0,4,0,0,0,1],
+    [1,0,0,1,2,0,0,1],
+    [1,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1]
+],
+[
+    [1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,3,0,1],
+    [1,0,2,0,1,0,0,1],
+    [1,3,4,2,0,2,3,1],
+    [1,0,2,0,1,0,0,1],
+    [1,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1]
+],
+[
+    [1,1,1,1,1,1,1,1],
+    [1,3,0,0,0,0,3,1],
+    [1,0,2,2,2,2,0,1],
+    [1,0,0,4,0,0,0,1],
+    [1,0,2,2,2,2,0,1],
+    [1,3,0,0,0,0,3,1],
+    [1,1,1,1,1,1,1,1]
+]
+        ];
+
+        let currentLevel = 0;
+        let gameMap = [];
+        let playerPos = {x: 0, y: 0};
+        let stepCount = 0;
+        let moveHistory = [];
+
+        function initGame() {
+            gameMap = JSON.parse(JSON.stringify(levels[currentLevel]));
+            findPlayer();
+            stepCount = 0;
+            moveHistory = [];
+            renderGame();
+            updateLevelInfo();
+        }
+
+        function findPlayer() {
+            for(let y = 0; y < gameMap.length; y++) {
+                for(let x = 0; x < gameMap[y].length; x++) {
+                    if(gameMap[y][x] === 4) {
+                        playerPos = {x, y};
+                        return;
+                    }
+                }
+            }
+        }
+
+        function renderGame() {
+            const gameDiv = document.getElementById('game');
+            gameDiv.style.gridTemplateColumns = `repeat(${gameMap[0].length}, 50px)`;
+            gameDiv.innerHTML = '';
+
+            for(let y = 0; y < gameMap.length; y++) {
+                for(let x = 0; x < gameMap[y].length; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell floor';
+                    
+                    switch(gameMap[y][x]) {
+                        case 1: cell.classList.add('wall'); break;
+                        case 2: cell.classList.add('box'); break;
+                        case 3: cell.classList.add('target'); break;
+                        case 4: cell.classList.add('player'); break;
+                        case 5: cell.classList.add('box-on-target'); break;
+                    }
+                    
+                    gameDiv.appendChild(cell);
+                }
+            }
+            
+            document.getElementById('stepCounter').innerText = `步数: ${stepCount}`;
+            checkWin();
+        }
+
+        function movePlayer(dx, dy) {
+            const newX = playerPos.x + dx;
+            const newY = playerPos.y + dy;
+            
+            if(gameMap[newY][newX] === 1) return; // 墙
+            
+            let moved = false;
+            if(gameMap[newY][newX] === 2 || gameMap[newY][newX] === 5) {
+                const boxNewX = newX + dx;
+                const boxNewY = newY + dy;
+                
+                if(gameMap[boxNewY][boxNewX] === 1 || 
+                   gameMap[boxNewY][boxNewX] === 2 || 
+                   gameMap[boxNewY][boxNewX] === 5) return;
+                
+                moveHistory.push({
+                    map: JSON.parse(JSON.stringify(gameMap)),
+                    pos: {...playerPos}
+                });
+                
+                if(gameMap[boxNewY][boxNewX] === 3) {
+                    gameMap[boxNewY][boxNewX] = 5;
+                } else {
+                    gameMap[boxNewY][boxNewX] = 2;
+                }
+                
+                if(gameMap[newY][newX] === 5) {
+                    gameMap[newY][newX] = 3;
+                } else {
+                    gameMap[newY][newX] = 0;
+                }
+                moved = true;
+            } else {
+                moveHistory.push({
+                    map: JSON.parse(JSON.stringify(gameMap)),
+                    pos: {...playerPos}
+                });
+                moved = true;
+            }
+            
+            if(moved) {
+                const isTarget = levels[currentLevel][playerPos.y][playerPos.x] === 3;
+                gameMap[playerPos.y][playerPos.x] = isTarget ? 3 : 0;
+                playerPos = {x: newX, y: newY};
+                gameMap[newY][newX] = 4;
+                stepCount++;
+                renderGame();
+            }
+        }
+
+        function undoMove() {
+            if (moveHistory.length > 0) {
+                const previousState = moveHistory.pop();
+                gameMap = previousState.map;
+                playerPos = previousState.pos;
+                if(stepCount > 0) stepCount--;
+                renderGame();
+            }
+        }
+
+        function checkWin() {
+            let boxesOnTarget = 0;
+            let totalTargets = 0;
+            
+            for(let y = 0; y < gameMap.length; y++) {
+                for(let x = 0; x < gameMap[y].length; x++) {
+                    if(levels[currentLevel][y][x] === 3) totalTargets++;
+                    if(gameMap[y][x] === 5) boxesOnTarget++;
+                }
+            }
+            
+            if(boxesOnTarget === totalTargets && totalTargets > 0) {
+                setTimeout(() => {
+                    alert(`恭喜通关！你用了 ${stepCount} 步完成第 ${currentLevel + 1} 关。`);
+                    if(currentLevel < levels.length - 1) {
+                        changeLevel(1);
+                    } else {
+                        alert('恭喜你完成了所有关卡！');
+                        changeLevel(-levels.length + 1);
+                    }
+                }, 100);
+            }
+        }
+
+        function changeLevel(delta) {
+            currentLevel = (currentLevel + delta + levels.length) % levels.length;
+            initGame();
+        }
+
+        function resetLevel() {
+            initGame();
+        }
+
+        function updateLevelInfo() {
+            document.getElementById('levelInfo').innerText = 
+                `当前关卡: ${currentLevel + 1} / ${levels.length}`;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'a': movePlayer(-1, 0); break;
+                case 'ArrowRight':
+                case 'd': movePlayer(1, 0); break;
+                case 'ArrowUp':
+                case 'w': movePlayer(0, -1); break;
+                case 'ArrowDown':
+                case 's': movePlayer(0, 1); break;
+                case 'z': undoMove(); break;
+            }
+        });
+
+        document.querySelectorAll('.gamepad button').forEach(button => {
+            ['mousedown', 'touchstart'].forEach(eventType => {
+                button.addEventListener(eventType, (e) => {
+                    e.preventDefault();
+                    if(button.classList.contains('up')) movePlayer(0, -1);
+                    if(button.classList.contains('down')) movePlayer(0, 1);
+                    if(button.classList.contains('left')) movePlayer(-1, 0);
+                    if(button.classList.contains('right')) movePlayer(1, 0);
+                });
+            });
+        });
+
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>

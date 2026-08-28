@@ -1,0 +1,184 @@
+{
+  "$schema": "../schemas/install-profiles.schema.json",
+  "version": 1,
+  "description": "Recommended installation profiles for common game-development setups.",
+  "profiles": [
+    {
+      "id": "baseline-core",
+      "summary": "Core scaffold without selecting a production engine pack.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts"
+      ]
+    },
+    {
+      "id": "unity-production",
+      "summary": "Baseline scaffold plus Unity surface for a standard Unity project.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:unity",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:art-audio-content",
+        "domain:qa-release"
+      ]
+    },
+    {
+      "id": "unreal-production",
+      "summary": "Baseline scaffold plus Unreal surface for a standard Unreal project.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:unreal",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:art-audio-content",
+        "domain:qa-release"
+      ]
+    },
+    {
+      "id": "godot-production",
+      "summary": "Baseline scaffold plus Godot surface for a standard Godot project.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:godot",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:art-audio-content",
+        "domain:qa-release"
+      ]
+    },
+    {
+      "id": "web-production",
+      "summary": "Baseline scaffold plus web (HTML5) surface for a 2D or 3D browser game project.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:web",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:art-audio-content",
+        "domain:qa-release"
+      ]
+    },
+    {
+      "id": "unity-multiplayer",
+      "summary": "Unity production profile with explicit multiplayer support.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:unity",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:qa-release",
+        "capability:multiplayer"
+      ]
+    },
+    {
+      "id": "unreal-aaa-console",
+      "summary": "Unreal-focused profile emphasizing production, content scale, release, and console compliance.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:unreal",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:art-audio-content",
+        "domain:qa-release"
+      ]
+    },
+    {
+      "id": "godot-indie-2d",
+      "summary": "Godot-focused profile for a small team shipping a scope-controlled project.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "engine:godot",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:qa-release"
+      ]
+    },
+    {
+      "id": "mobile-f2p-liveops",
+      "summary": "Cross-domain profile for mobile live games with economy, telemetry, and retention focus.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common",
+        "domain:qa-release",
+        "capability:liveops",
+        "capability:mobile-f2p"
+      ]
+    },
+    {
+      "id": "preproduction-design-heavy",
+      "summary": "Lean profile for concept, GDD, tech planning, and slice definition before engine lock-in.",
+      "components": [
+        "baseline:rules",
+        "baseline:agents",
+        "baseline:commands",
+        "baseline:skills",
+        "baseline:docs",
+        "baseline:contexts",
+        "domain:workflow",
+        "domain:design",
+        "domain:engineering-common"
+      ]
+    }
+  ],
+  "policy": {
+    "default_active_engine_count": 1,
+    "notes": [
+      "Install multiple engine packs only for comparison, migration planning, or cross-engine research.",
+      "Production profiles should activate a single engine pack at a time to preserve engine isolation."
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visual Flow to UI"
+  short_description: "批量 UI 截图拆解、图像素材复用、真实点击回归与流程还原"
+  default_prompt: "Use $visual-flow-to-ui to analyze these UI flow screenshots, build or reuse image-backed components, create an interaction map, and reconstruct every tested state and click path."

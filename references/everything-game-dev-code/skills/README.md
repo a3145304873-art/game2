@@ -1,0 +1,213 @@
+# skills/
+
+Skills are reusable execution patterns. Where rules say what good looks like, and commands say how work starts, skills define how work is carried out well. Each skill is a self-contained, step-by-step procedure with explicit inputs, outputs, quality criteria, and failure modes.
+
+## What skills do
+
+A skill gives an agent a concrete, repeatable process for a specific task. Without a skill, an agent falls back on generic behavior. With a skill loaded:
+
+- the agent follows a defined process rather than improvising
+- inputs and outputs are declared, so handoffs are clean
+- quality criteria are explicit, so done means done
+- common failure modes are documented, so the agent avoids known pitfalls
+
+Skills are invoked by agents when executing commands. They are not invoked directly.
+
+Each `SKILL.md` follows a shared section layout (Purpose, Use When, Inputs, Process, Outputs, Quality Bar, Common Failure Modes, Related Agents, Related Commands, Notes). Skills may additionally include an optional `## Related Skills` section (between Related Commands and Notes) listing complementary skills; entries are validated against the skill set by `npm run validate:structure`.
+
+## Skill domains
+
+Skills are organized into nine domain folders. Each skill lives in its own subfolder with a `SKILL.md` file.
+
+### art-audio-content/
+
+Skills for producing and integrating creative assets.
+
+| Skill | Purpose |
+|-------|---------|
+| `2d-animation-pipeline` | Author, import, and wire 2D animations with consistent naming and state conventions |
+| `3d-animation-pipeline` | Skeletal clip authoring, root motion policy, retargeting, and compression rules |
+| `3d-asset-pipeline` | Export, scale, pivot, and naming rules so 3D models import without per-asset fixes |
+| `ai-asset-generation` | Generate real assets (images, skyboxes, 3D models, SFX, music, voice, video) via the provider registry with provenance and acceptance gates |
+| `art-bible` | Define a visual direction artists, UI, technical art, and marketing can execute consistently |
+| `audio-implementation` | Integrate audio assets into the engine with consistent mixing, triggering, and fallback rules |
+| `cinematic-pipeline` | Define cutscene production from animatic to in-engine delivery |
+| `dialogue-content-pipeline` | Structure dialogue authoring, localization handoff, and runtime integration |
+| `generated-raster-asset-pipeline` | Acceptance, validation, and runtime integration rules for image-model-generated raster assets |
+| `lighting-lod-pipeline` | Lighting policy, light budgets, LOD chains, and culling for 3D scenes |
+| `localization-pipeline` | Prepare text, audio, and assets for localized builds |
+| `materials-shading-pipeline` | Material libraries, PBR texture conventions, and shader budgets |
+| `placeholder-asset-pipeline` | Engine-neutral standards for placeholder sprites, prefabs, and procedural audio |
+| `rigging-skinning-pipeline` | Skeleton, skinning, and attachment conventions for shareable, budget-safe rigs |
+| `sprite-pipeline` | Sprite authoring, import, atlas, and naming conventions |
+| `technical-art-pipeline` | Define the shader, VFX, and rig pipeline from DCC tools to engine |
+| `tilemap-pipeline` | Tileset and tilemap authoring, import, and collision conventions |
+| `ui-animation-pipeline` | UI motion conventions: transitions, feedback, and tuning rules |
+| `ui-asset-pipeline` | UI visual asset conventions: naming, 9-slice, atlas, and theming |
+| `vfx-pipeline` | Produce and integrate visual effects from concept to in-game playback |
+
+### design/
+
+Skills for game design work across all genres and phases.
+
+| Skill | Purpose |
+|-------|---------|
+| `accessibility-design` | Design input, visual, and audio options that meet accessibility standards |
+| `combat-design` | Define the combat loop, ability vocabulary, and encounter tuning process |
+| `core-loop-design` | Define the primary player activity and the support loops that sustain it |
+| `economy-balancing` | Balance resource income, spend, and progression curves against player psychology |
+| `game-feel-design` | Design hit-stop, screen shake, tweening, and response timing for readable, satisfying actions |
+| `level-design` | Design level layout, pacing, landmark placement, and player guidance |
+| `liveops-design` | Design live events, seasonal content, and limited-time mechanics |
+| `monetization-design` | Define monetization strategy and validate against retention and fairness |
+| `narrative-design` | Structure story beats, character arcs, and world-building for player agency |
+| `onboarding-tutorial-design` | Design first-hour experience that teaches through play, not interruption |
+| `procgen-design` | Design procedural content systems with seeds, constraints, and validation gates |
+| `progression-design` | Define player growth curves, unlock gates, and mastery signals |
+| `quest-design` | Design quest structure, objective clarity, and branching outcomes |
+
+### engineering-common/
+
+Engine-neutral engineering patterns applicable across Unity, Unreal, and Godot.
+
+| Skill | Purpose |
+|-------|---------|
+| `ai-behavior-patterns` | Implement NPC behavior trees, state machines, and utility AI |
+| `animation-state-patterns` | Structure animation graphs for readable, maintainable playback logic |
+| `asset-management` | Organize, reference, and load assets with predictable runtime behavior |
+| `build-pipeline-patterns` | Configure CI builds, artifact output, and platform packaging |
+| `event-bus-patterns` | Decouple systems using an event bus with defined message contracts |
+| `gameplay-architecture` | Structure the core game loop, scene lifecycle, and state management |
+| `input-abstraction` | Abstract input handling for keyboard, gamepad, and touch with rebinding support |
+| `memory-budgeting` | Track allocation by system, set platform budgets, and enforce limits |
+| `multiplayer-netcode-patterns` | Implement authoritative server, prediction, and reconciliation patterns |
+| `performance-budgeting` | Define per-platform CPU/GPU/memory budgets and enforce them during development |
+| `physics-gameplay-patterns` | Use physics for gameplay feel with deterministic, tunable results |
+| `save-system-patterns` | Implement save/load with versioning, corruption detection, and migration |
+| `telemetry-instrumentation` | Instrument events for retention, funnel, and system-health analysis |
+| `tools-pipeline-patterns` | Build editor extensions and pipeline scripts that reduce manual workflow |
+| `ui-hud-patterns` | Structure HUD and menu systems for scalability and controller support |
+
+### godot/
+
+Godot-specific engineering skills. Only apply within a Godot project.
+
+| Skill | Purpose |
+|-------|---------|
+| `godot-3d-scenes` | Compose 3D scenes: Node3D structure, cameras, physics bodies, environment, and density |
+| `godot-build-release` | Configure export profiles, signing, and release packaging for Godot |
+| `godot-csharp-patterns` | Apply idiomatic C# in Godot with proper lifecycle and signal integration |
+| `godot-editor-tooling` | Build Godot editor plugins and pipeline tools using EditorPlugin |
+| `godot-gdscript-standards` | Write readable, maintainable GDScript following community standards |
+| `godot-input-patterns` | Implement input through InputMap actions with correct propagation, devices, and rebinding |
+| `godot-performance` | Profile and optimize Godot projects against platform performance budgets |
+| `godot-project-structure` | Organize a Godot project for team clarity and maintainability |
+| `godot-resource-management` | Load, cache, and unload Godot resources without memory leaks |
+| `godot-scene-architecture` | Structure scenes for reuse, clear ownership, and minimal coupling |
+| `godot-signals-patterns` | Use Godot signals for clean decoupled communication between nodes |
+| `godot-testing` | Test GDScript and C# code using GUT or equivalent test frameworks |
+
+### unity/
+
+Unity-specific engineering skills. Only apply within a Unity project.
+
+| Skill | Purpose |
+|-------|---------|
+| `unity-addressables` | Use Addressables with explicit grouping, loading, updating, and fallback rules |
+| `unity-build-release` | Configure Unity build pipeline for target platforms and release packaging |
+| `unity-csharp-standards` | Write idiomatic, testable C# in Unity respecting lifecycle order |
+| `unity-editor-tooling` | Build custom inspectors, editor windows, and pipeline scripts in Unity |
+| `unity-gameplay-patterns` | Structure Unity-specific gameplay systems for maintainability |
+| `unity-input-system` | Implement the new Unity Input System with rebinding and multi-device support |
+| `unity-performance` | Profile and optimize Unity projects against platform performance budgets |
+| `unity-project-structure` | Organize a Unity project's Assets folder for team clarity and maintainability |
+| `unity-testing` | Write Play Mode and Edit Mode tests using Unity Test Framework |
+| `unity-urp-hdrp` | Use URP or HDRP render pipelines with correct settings and custom pass patterns |
+
+### unreal/
+
+Unreal Engine-specific engineering skills. Only apply within an Unreal project.
+
+| Skill | Purpose |
+|-------|---------|
+| `unreal-blueprint-patterns` | Use Blueprints for designer-owned logic with clear C++ boundaries |
+| `unreal-build-release` | Configure Unreal build, cooking, packaging, and platform submission |
+| `unreal-cpp-standards` | Write idiomatic Unreal C++ respecting the UObject lifecycle and reflection system |
+| `unreal-editor-tooling` | Build Unreal Editor utilities, slate widgets, and pipeline automation |
+| `unreal-enhanced-input` | Implement Enhanced Input with Input Actions, Mapping Contexts, triggers, and remapping |
+| `unreal-gameplay-framework` | Use GameMode, GameState, PlayerController, and Pawn correctly |
+| `unreal-gas-patterns` | Implement the Gameplay Ability System with attributes, effects, and cues |
+| `unreal-performance` | Profile and optimize Unreal projects against platform performance budgets |
+| `unreal-project-structure` | Organize an Unreal project's Content and Source directories for team clarity |
+| `unreal-replication` | Implement server-authoritative replication for multiplayer gameplay |
+| `unreal-testing` | Write Unreal automated tests using the Automation Testing Framework |
+
+### qa-release/
+
+Skills for quality assurance and release delivery.
+
+| Skill | Purpose |
+|-------|---------|
+| `bug-triage` | Classify, prioritize, and assign bugs with reproducible steps and severity |
+| `compliance-checklists` | Validate builds against platform-holder technical requirements |
+| `console-certification` | Prepare a build for Sony, Microsoft, or Nintendo certification submission |
+| `crash-triage` | Diagnose crash reports with stack traces, repro steps, and root-cause analysis |
+| `qa-test-matrix` | Define test coverage by feature, platform, and risk area |
+| `release-readiness` | Validate that a build meets all exit criteria before submission |
+| `store-submission` | Prepare store assets, metadata, and build packages for platform stores |
+
+### web/
+
+Web (HTML5/browser) engine-specific skills, covering both 2D canvas and 3D WebGL/WebGPU games. Strictly isolated from the other engine layers.
+
+| Skill | Purpose |
+|-------|---------|
+| `web-3d-rendering` | Real-time 3D scenes: camera/lights, glTF pipeline, GPU budgets, and disposal discipline |
+| `web-build-release` | Build tooling, bundling decisions, and deployment to static hosts |
+| `web-canvas-rendering` | Canvas 2D/WebGL rendering conventions, pixel-art crispness, scaling, and batching |
+| `web-game-architecture` | Game loop, fixed timestep, state machines, and system boundaries |
+| `web-input-touch` | Named-action input abstraction across keyboard, mouse, touch, and gamepad |
+| `web-js-ts-standards` | JS/TS coding standards for browser game code |
+| `web-performance` | Frame budget, allocation/GC discipline, pooling, and devtools profiling |
+| `web-project-structure` | Organize a web game project: entry, modules, assets, config, tests |
+| `web-testing` | Unit tests for pure logic, headless smoke tests, and browser matrix passes |
+
+### workflow/
+
+Skills for planning, documentation, and scaffold-level coordination.
+
+| Skill | Purpose |
+|-------|---------|
+| `continuous-learning` | Capture and integrate lessons from playtests, incidents, and milestones |
+| `gdd-writing` | Write and maintain a game design document as a living source of truth |
+| `milestone-planning` | Define milestone scope, sequencing, and exit criteria |
+| `orchestration-patterns` | Coordinate multi-agent workflows with clean handoffs and role boundaries |
+| `playtest-analysis` | Synthesize playtest observations into prioritized, actionable findings |
+| `risk-register` | Track production risks with likelihood, impact, and mitigation plans |
+| `tdd-workflow` | Implement features test-first with clear acceptance criteria |
+| `technical-design-document` | Write and maintain a technical design document as a living source of truth |
+| `verification-loop` | Verify that implemented work matches its design intent and exits cleanly |
+| `vertical-slice-planning` | Scope a vertical slice as a proof of the core loop, not a demo |
+
+## Skill file format
+
+Each skill uses a standard YAML frontmatter block followed by a ten-section body:
+
+```yaml
+---
+name: skill-name
+description: One-line purpose statement
+origin: everything-game-dev-code
+category: domain-name
+---
+```
+
+The body sections are: **Purpose**, **Use When**, **Inputs**, **Process**, **Outputs**, **Quality Bar**, **Common Failure Modes**, **Related Agents**, **Related Commands**, **Notes**.
+
+## Relationship to other folders
+
+- **agents/** — agents execute skills; skills are the work unit, agents are the identity
+- **commands/** — commands trigger agents which invoke the relevant skill for the task
+- **rules/** — skills reference the rules layer for engine-specific implementation detail; they do not duplicate it
+- **contexts/** — the active context signals which skill domains are highest priority for the current phase
+- **docs/orchestration/agent-skill-matrix.md** — authoritative mapping of agents to their primary and secondary skills
